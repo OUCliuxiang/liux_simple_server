@@ -4,13 +4,14 @@
 #include <string>
 #include <stdint.h> 
 #include <memory>
+#include <lish>
 
 namespace sylar {   // 为了避免和其他人的代码有方法或变量的相同名字         
 
 // 日志事件，记录日志现场    
 class LogEvent {
 public:
-    // 智能指针管理对象。       
+    // 智能指针管理对象       
     using ptr = std::shared_ptr<LogEvent>;
     LogEvent();
 
@@ -49,17 +50,23 @@ private:
     LogLevel::Level m_level;
 };
 
-// 日志输出器
+// 日志器
 class Logger{
 public:
     using ptr = std::shared_ptr<Logger>;
     Logger(const std::string& name = "root");
     void log(LogLevel::Level level, LogEvent::ptr event);
+    
+    void debug(LogEvent::ptr event);
+    void info(LogEvent::ptr event);
+    void warn(LogEvent::ptr event);
+    void error(LogEvent::ptr event);
+    void fatal(LogEvent::ptr event);
 
 private:
-    std::string m_name;
-    LogLevel::Level m_level;
-    LogAppender::ptr;
+    std::string m_name;                         // 日志名称
+    LogLevel::Level m_level;                    // 满足该级别的日志才会被输出
+    std::list<LogAppender::ptr> m_appenders;    // 输出到 Appender 集合
 };
 
 // 日志格式化器
@@ -73,13 +80,11 @@ private:
 
 // 输出到控制台  
 class StdoutLogAppender: LogAppender{
-
-}
+};
 
 // 输出到文件      
 class FileLogAppender: LogAppender{
-
-}
+};
 
 }
 
