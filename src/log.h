@@ -4,7 +4,10 @@
 #include <string>
 #include <stdint.h> 
 #include <memory>
-#include <lish>
+#include <list>
+#include <stringstream>
+#include <fstream>
+#include <stdio.h>
 
 namespace sylar {   // 为了避免和其他人的代码有方法或变量的相同名字         
 
@@ -42,18 +45,21 @@ public:
 class LogAppender{
 public:
     using ptr = std::shared_ptr<LogAppender>;
-    // 日志输出目的地可能有很多，这里要定义成虚类，其自身无法实现，只能让子类去继承
-    virtual ~LogAppender() {}
-    void log(LogLevel::Level level, LogEvent::ptr event);
-
+    // 日志输出目的地可能有很多，这里要定义成抽象类，其自身无法实现，只能让子类去继承
+    virtual ~LogAppender() {};
+    virtual void log(LogLevel::Level level, LogEvent::ptr event) = 0;
+    void setFormatter(LogFormatter::ptr val) { m_formatter = val;}
+    LogFormatter::ptr getFormatter() const {return m_formatter;} 
 private:
     LogLevel::Level m_level;
+    LogFormatter::ptr m_formatter;
 };
 
 // 日志器
 class Logger{
 public:
     using ptr = std::shared_ptr<Logger>;
+
     Logger(const std::string& name = "root");
     void log(LogLevel::Level level, LogEvent::ptr event);
     
@@ -62,6 +68,11 @@ public:
     void warn(LogEvent::ptr event);
     void error(LogEvent::ptr event);
     void fatal(LogEvent::ptr event);
+
+    void addAppender(LogAppender::ptr appender);
+    void delAppender(LogAppender::ptr appender);
+    LogLevel::Level getLevel() const {return m_level};
+    void setLevel(LogLevel::Level val) {m_level = val};
 
 private:
     std::string m_name;                         // 日志名称
@@ -79,11 +90,22 @@ private:
 };
 
 // 输出到控制台  
-class StdoutLogAppender: LogAppender{
+class StdoutLogAppender: public LogAppender{
+public:
+    using ptr = std::shared_ptr<StdoutLogAppender>;
+    void log(LogLevel::Level level, LogEvent::ptr event) override;
 };
 
 // 输出到文件      
-class FileLogAppender: LogAppender{
+class FileLogAppender: public LogAppender{
+public:
+    using ptr = std::shared_ptr<FileLogAppender>;
+    FileLogAppender(const std::string& filename);
+    void log(LogLevel::Level level, LogEvent::ptr event) override;
+
+private:
+    std::string m_name;
+    std::ofstream m_filename;
 };
 
 }
