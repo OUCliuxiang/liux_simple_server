@@ -6,7 +6,6 @@
 #include <memory>
 #include <list>
 #include <stringstream>
-#include <fstream>
 #include <stdio.h>
 
 namespace sylar {   // 为了避免和其他人的代码有方法或变量的相同名字         
@@ -48,9 +47,12 @@ public:
     // 日志输出目的地可能有很多，这里要定义成抽象类，其自身无法实现，只能让子类去继承
     virtual ~LogAppender() {};
     virtual void log(LogLevel::Level level, LogEvent::ptr event) = 0;
-    void setFormatter(LogFormatter::ptr val): m_formatter(val) {}
+    void setFormatter(LogFormatter::ptr val): m_formatter(val) {} 
+    // 不要纯虚，纯虚需要子类实现，这里直接空着就行
+    
     LogFormatter::ptr getFormatter() const {return m_formatter;} 
-private:
+
+protected:
     LogLevel::Level m_level;
     LogFormatter::ptr m_formatter;
 };
@@ -84,9 +86,34 @@ private:
 class LogFormatter{
 public:
     using ptr = std::shared_ptr<LogFormatter>;
+    LogFormatter(const std::string& pattern): m_pattern(pattern) {};
     std::string format(LogEvent::ptr event);
-private:
 
+private:
+    // 用于 输出 解析 
+    class FormatItem {
+    public:
+        using ptr = std::shared_ptr<FormatItem>;
+        virtual ~FormatItem() {};
+        virtual void format(std::stringstream& ss, LogEvent::ptr event) = 0;
+    };
+    void init(); // 解析 pattern      ???
+    std::string m_pattern; // 按照 pattern 的格式解析 event 里的信息
+    std::vector<FormatItem::ptr> m_items; // 多组输出？此处尚不理解，标记。   
+};
+
+// 输出到文件      
+class FileLogAppender: public LogAppender{
+public:
+    using ptr = std::shared_ptr<FileLogAppender>;
+    FileLogAppender(const std::string& filename): m_filename(filename) {}
+    // 重新打开文件，打开成功返回 true       
+    bool reopen();
+    void log(LogLevel::Level level, LogEvent::ptr event) override;
+
+private:
+    std::string m_filename;
+    FILE * m_fp;  // 这里我用 C 风格的格式化文件读写，更快一些。      
 };
 
 // 输出到控制台  
@@ -94,18 +121,6 @@ class StdoutLogAppender: public LogAppender{
 public:
     using ptr = std::shared_ptr<StdoutLogAppender>;
     void log(LogLevel::Level level, LogEvent::ptr event) override;
-};
-
-// 输出到文件      
-class FileLogAppender: public LogAppender{
-public:
-    using ptr = std::shared_ptr<FileLogAppender>;
-    FileLogAppender(const std::string& filename);
-    void log(LogLevel::Level level, LogEvent::ptr event) override;
-
-private:
-    std::string m_name;
-    std::ofstream m_filename;
 };
 
 }
