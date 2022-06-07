@@ -44,4 +44,21 @@ void Logger::fatal(LogEvent::ptr event){
     log(LogLevel::FATAL, event);
 }
 
+void FileLogAppender::reopen(){
+    if (m_fp) fclose(m_fp);
+    m_fp = fopen(m_filename, "a"); // a 追加模式，若后面带 +： 读写模式，不带则只写    
+    return !!m_fp;
+}
+
+void FileLogAppender::log(LogLevel::Level level, LogEvent::ptr event) {
+    if (level >= m_level)  fprintf(m_fp, "%s", m_formatter.format(event));
+    // 不要用 fwrite，这个是二进制写，我们希望写入格式化为字符串后的日志内容。    
+    // fwrite 写入用 fread 读，fprintf 写入用 fscanf 读。       
+    fclose();
+}
+
+void StdoutLogAppender::log(LogLevel::Level level, LogEvent::ptr event){
+    if (level >= m_level) fprintf(stdout, "%s", m_formatter.format(event));
+}
+
 }

@@ -48,7 +48,7 @@ public:
     // 日志输出目的地可能有很多，这里要定义成抽象类，其自身无法实现，只能让子类去继承
     virtual ~LogAppender() {};
     virtual void log(LogLevel::Level level, LogEvent::ptr event) = 0;
-    void setFormatter(LogFormatter::ptr val) { m_formatter = val;}
+    void setFormatter(LogFormatter::ptr val): m_formatter(val) {}
     LogFormatter::ptr getFormatter() const {return m_formatter;} 
 private:
     LogLevel::Level m_level;
@@ -72,7 +72,7 @@ public:
     void addAppender(LogAppender::ptr appender);
     void delAppender(LogAppender::ptr appender);
     LogLevel::Level getLevel() const {return m_level};
-    void setLevel(LogLevel::Level val) {m_level = val};
+    void setLevel(LogLevel::Level val): m_level(val) {}
 
 private:
     std::string m_name;                         // 日志名称
