@@ -69,43 +69,62 @@ std::string LogFormatter::format(LogEvent::ptr event){
 
 /** 按照百分号区分不同类型信息, 三种格式：      
     %xxx, 直接指定某类型格式      
-    %xxx{xxx}, 携带具体格式参数，具体例子不明确。   
+    %xxx{xxx}, 携带具体格式参数，如 %d{%Y-%M-%D %h: %m: %s: %ms}   
     %% 转义，输出百分号         
 **/
 void LogFormatter::init(){
     // string 内容, format 格式, type 具体类型
     std::vector<std::tuple<std::string,, std::string, int>> vec;
-    std::string str; // format 格式 字符串形式
+    std::string nstr; // 存放普通的非格式化描述符内容
     for (size_t i = 0; i < m_pattern.size(); i++){
+        
         if (m_pattern[i] != '%') {
-            str.append(1, m_pattern[i]);
+            // 如果不是 % ，应当是常规的字符串内容，如 "nums is %d" 中的 "nums is "
+            nstr.append(1, m_pattern[i]);
             continue;
         }
-        // 走过 % 后 i 一定是 % 后面第一个字符
-        size_t n = i + 1;
-        int fmt_status = 0; // 是否读到大括号，读到置一，说明后续读的内容是格式的具体参数。     
-        size_t fmt_begin = 0; // 带参结构参数开始的位置。 
 
-        std::string fmt, str;
+        if (i+1 < m_pattern.size() && m_pattern[i+1] == '%') { // %%
+            nstr.append(1, '%');
+            continue;
+        }
+
+        // 排除前面两种情况，此时一定是 %xxx 或 %xx{yy} 情形
+        size_t n = i + 1;  // 格式描述符开始的位置    
+        size_t fmt_begin = 0; // 带参结构参数开始的位置     
+        int fmt_status = 0; // 0: 尚未读到大括号  1: 读到左大括号  2: 读到右大括号         
         
-        while (n < m_pattern.size()) {
-            if (isspace(m_pattern[n]))  break;
-            // 如果是空格，说明该类型描述终止，可以继续读下一个类型描述符如 "%d "
+
+        // 应对含参格式如 %xx{yy}, str 存储格式 xx, fmt 存储参数 yy
+        std::string str; 
+        std::string fmt;
+        
+        while (n < m_pattern.size()) { // 当前 % 后面的格式描述符（组合）
             
-            if (fmt_status == 0){
-                if (m_pattern[n] == '{'){ // 有具体类型参数 的描述符
-                    str = m_pattern.substr(i, n-i);
-                    ++ n;
-                    fmt_status = 1; 
-                    fmt_begin = n;
-                    continue;
-                }
+            if (!fmt_status && !isalpha(m_pattern[n]) && m_pattern[n] != '{' 
+                && m_pattern != '}') { // 遇到非（法）格式描述符，退出
+                str.append(i+1, n-i-1);
+                break;
+            }    
+            
+            if (!fmt_status && m_pattern[n] == '{'){ // 格式描述符后面首次读到大括号：有参格式
+                str = m_pattern.substr(i+1, n-i-1);
+                ++ n;
+                fmt_status = 1; 
+                fmt_begin = n;
+                continue;
             }
-            if (fmt_status == 1){ // 已经读到大括号，后面的是具体格式参数
-                if (m_pattern[n] == '}'){
-                    fmt = m_pattern.substr(fmt_begin, n - fmt_begin);
-                }
+            else if (fmt_status == 1 && m_pattern[n] == '}'){ // 读到大括号后首次读到右括号：参数结束
+                fmt = m_pattern.substr(fmt_begin, n - fmt_begin);
+                fmt_status = 2; // 含参格式解析结束
+                ++ n;
+                break; // 本组描述符完全结束，退出。 
             }
+            ++ n;
+        }
+
+        if (fmt_status == 0) {
+            str = m_pattern.substr()
         }
     }
 }

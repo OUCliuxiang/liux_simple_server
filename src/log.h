@@ -107,7 +107,7 @@ class FileLogAppender: public LogAppender{
 public:
     using ptr = std::shared_ptr<FileLogAppender>;
     FileLogAppender(const std::string& filename): m_filename(filename) {}
-    // 重新打开文件，打开成功返回 true       
+    // re-open file and return  true       
     bool reopen();
     void log(LogLevel::Level level, LogEvent::ptr event) override;
 
