@@ -17,13 +17,21 @@ public:
     using ptr = std::shared_ptr<LogEvent>;
     LogEvent();
 
+    const char* getFile() const {return m_file;}
+    const uint32_t getLine() const {return m_line;}
+    const uint32_t getElapse() const {return m_elapse;}
+    const uint32_t getThreadId() const {return m_threadId;}
+    const uint32_t getFiberId() const {return m_fiberId;}
+    const uint64_t getTime() const {return m_time;}
+    const std::string getContent() const {return m_content;} 
+
 private:
     const char* m_file = nullptr;   // 文件名
     uint32_t m_line = 0;        // 行号
-    uint64_t m_elapse = 0       // 程序启动到现在的毫秒数    
+    uint32_t m_elapse = 0       // 程序启动到现在的毫秒数    
     uint32_t m_threadId = 0;    // 线程号
     uint32_t m_fiberId = 0;     // 协程号 
-    uint64_t  m_time = 0;       // 时间戳，到毫秒
+    uint64_t m_time = 0;        // 时间戳，到毫秒
     std::string m_content;      // 日志内容
 };
 
@@ -98,6 +106,8 @@ private:
         virtual void format(std::stringstream& ss, LogEvent::ptr event) = 0;
     };
     void init(); // 解析 pattern      ???
+
+    bool m_error = true;
     std::string m_pattern; // 按照 pattern 的格式解析 event 里的信息
     std::vector<FormatItem::ptr> m_items; // 多组输出？此处尚不理解，标记。   
 };
