@@ -1,7 +1,9 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
-#include <string>
+#include <stdio.h>  // vprintf 可变参数系列函数
+#include <time.h>   //time_t 时间相关
+#include <string>   
 #include <cstdarg>
 #include <memory>
 #include <sstream>
@@ -52,6 +54,7 @@ public:
     uint32_t getFiberId() const {return m_fiberId;}
     time_t getTime() const {return m_time;}
     const std::string getThreadName() const {return m_threadName;}
+    // 可变参数打印到标准输出
     void printf(const char* fmt, ...);
 
 private:
