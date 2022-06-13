@@ -45,8 +45,8 @@ public:
              m_time(time), 
              m_threadName(threadName) {}
     
-    LogLevel::Level getLevel() const {return m_level;}
-    std::string getContent() const {return m_ss.str();}
+    const LogLevel::Level getLevel() const {return m_level;}
+    const std::string getContent() const {return m_ss.str();}
     const char* getFile() const {return m_file;}
     uint32_t getLine() const {return m_line;}
     uint64_t getElapse() const {return m_elapse;}
@@ -54,12 +54,13 @@ public:
     uint32_t getFiberId() const {return m_fiberId;}
     time_t getTime() const {return m_time;}
     const std::string getThreadName() const {return m_threadName;}
+    const std::string getLoggerName() const {return m_loggerName;}
     // 可变参数打印到标准输出
     void printf(const char* fmt, ...);
 
 private:
     LogLevel::Level m_level;
-    std::stringstream m_ss; // 流式存储日志内容，方便流式写文件。头文件 <sstream>
+    std::stringstream m_ss; // 存储日志内容到字符串流，方便流式写文件。头文件 <sstream>
     const char* m_file      = nullptr;
     uint32_t    m_line      = 0;
     uint64_t    m_elapse    = 0;    // 日志器创建到现在的时间毫秒
@@ -92,9 +93,9 @@ public:
     using ptr = std::shared_ptr<LogFormatter>;
 
     // 默认格式模板： 年-月-日 时:分:秒 [累计运行毫秒] 线程ID 线程名 协程ID [日志级别] [日志器名称]: 文件名 行号 消息体
+    // 这里先声明，不要实现。实现需要调用 init 函数，为保证不出错，在外部调用吧。        
     LogFormatter(std::string& pattern = 
-        "%d{%Y-%m-%d %H:%M:%S} [%rms]%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n"): 
-        m_pattern(pattern) {}
+        "%d{%Y-%m-%d %H:%M:%S} [%rms]%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n");
     
     // 初始化日志器，解析模板 m_pattern，提取各具体格式项并实例化 FormatItem 的各派生类对象
     void init();    
@@ -114,6 +115,7 @@ public:
         virtual ~FormatItem() {}     
         // 纯虚函数，不可实现。子类必须根据特定的格式化项实现自己的 format 解析方法。
         // 纯虚函数，该类是抽象类，无法实例化。  
+        // 传入的本来就是指针了，不需要 const 引用。
         virtual void format(std::ostream& os, LogEvent::ptr event) = 0;
     };
 
