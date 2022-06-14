@@ -11,10 +11,10 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # 库文件的源文件
 set(LIB_SRC 
-    src/log.cc)
+    src/log.cpp)
 add_library(sylar SHARED ${LIB_SRC})    # SHARED 方式生成 sylar.so 动态库
 
-add_executable(test_log tests/test_log.cc)      # 生成 test 测试文件 可执行文件
+add_executable(test_log tests/test_log.cpp)      # 生成 test 测试文件 可执行文件
 target_link_libraries(test_log sylar)       # 将可执行文件 test_log 和头文件库文件连接起来    
 
 # 可执行文件生成到项目路径下的 bin，库文件生成到 lib。项目路径缺省就是当前路径 ./ 。

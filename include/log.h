@@ -9,6 +9,8 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <list>
+#include <map>
 
 namespace sylar{
 
@@ -24,7 +26,7 @@ public:
     };
 
     static const char* toString(Level);
-    static Level toLevel(const string&);
+    static Level toLevel(const std::string&);
 };
 
 
@@ -55,10 +57,12 @@ public:
     time_t getTime() const {return m_time;}
     const std::string getThreadName() const {return m_threadName;}
     const std::string getLoggerName() const {return m_loggerName;}
+    void setLoggerName(const std::string str) {m_loggerName = str;}
     // 可变参数打印到标准输出
     void printf(const char* fmt, ...);
 
 private:
+    std::string m_loggerName;       // 日志器名
     LogLevel::Level m_level;
     std::stringstream m_ss; // 存储日志内容到字符串流，方便流式写文件。头文件 <sstream>
     const char* m_file      = nullptr;
@@ -68,7 +72,6 @@ private:
     uint32_t    m_fiberId   = 0;    // 协程 ID
     time_t      m_time;             // UTC 时间戳
     std::string m_threadName;       // 线程名字
-    std::string m_loggerName;       // 日志器名
 };
 
 
@@ -94,7 +97,7 @@ public:
 
     // 默认格式模板： 年-月-日 时:分:秒 [累计运行毫秒] 线程ID 线程名 协程ID [日志级别] [日志器名称]: 文件名 行号 消息体
     // 这里先声明，不要实现。实现需要调用 init 函数，为保证不出错，在外部调用吧。        
-    LogFormatter(std::string& pattern = 
+    LogFormatter(const std::string& pattern = 
         "%d{%Y-%m-%d %H:%M:%S} [%rms]%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n");
     
     // 初始化日志器，解析模板 m_pattern，提取各具体格式项并实例化 FormatItem 的各派生类对象
@@ -146,10 +149,10 @@ public:
     // 纯虚，依靠子类去实现。向目的地写入日志。
     virtual void log(LogEvent::ptr event) = 0;
 
-private:
+protected:
     // 拥有一个可设置格式化器和一个默认的格式化器，日志事件格式化后再输出
-    LogFormatter::ptr m_formatter;
     LogFormatter::ptr m_default_formatter;
+    LogFormatter::ptr m_formatter;
 };
 
 
@@ -157,6 +160,7 @@ private:
 class StdoutLogAppender: public LogAppender {
 public:
     using ptr = std::shared_ptr<StdoutLogAppender>;
+    StdoutLogAppender();
 
     void log(LogEvent::ptr event) override;
 };
@@ -170,12 +174,15 @@ public:
     FileLogAppender(const std::string& filename);
     
     void log(LogEvent::ptr event) override;
+    // 重新打开输出流
     bool reopen(); 
 
 private:
     std::string m_filename;
     // 文件输出流，流式写文件。
     std::ofstream m_filestream;
+    bool m_reopenError = false; // 打开失败标志位
+    uint64_t m_lastTime; // 记录上一次打开输出流的时间，如果超过某阈值，log 时要重新打开
 };
 
 
@@ -198,13 +205,41 @@ public:
 private:
     std::string m_name;
     // 日志器等级，用于筛选可输出的日志事件
-    LogLevel::Level m_level;
+    LogLevel::Level m_level = LogLevel::INFO;
     // LogAppender 集合，一个日志器可能有很多输出目的地
     std::list<LogAppender::ptr> m_appenders;
     // 日志器创建时间    
-    uint64_t m_createTime;d
+    uint64_t m_createTime = 0;
 };
 
+
+// 日志事件包装器，包含日志器和事件，方便宏定义
+class LogEventWarp {
+public:
+    using ptr = std::shared_ptr<LogEventWarp>;
+    LogEventWarp(Logger::ptr logger, LogEvent::ptr event);
+    // 析构实现为：包装器析构的时候写日志
+    ~LogEventWarp();
+    LogEvent::ptr getLogEvent() const {return m_event;}
+
+private:
+    Logger::ptr m_logger;
+    LogEvent::ptr m_event;
+};
+
+
+// 日志器管理模块 
+class LoggerManager {
+public:
+    LoggerManager();
+    void init();
+    Logger::ptr getLogger(const std::string& name);
+    Logger::ptr getRoot();
+
+private:
+    std::map<std::string, Logger::ptr> m_loggers;
+    Logger::ptr m_root; // 根日志器
+};
 
 }
 

@@ -1,10 +1,12 @@
 #include <utility> // std::pair
+#include <functional> // std::function
+#include <iostream>
 #include "log.h"
 
 namespace sylar{
 
 const char* LogLevel::toString(LogLevel::Level level){
-    switch (level): {
+    switch (level) {
 // 宏定义语句 define 中参数前面加 # 代表转为字符串  
 #define XX(name) case LogLevel::name: return #name; 
     XX(INFO)
@@ -19,7 +21,7 @@ const char* LogLevel::toString(LogLevel::Level level){
 }
 
 LogLevel::Level toLevel(std::string& val) {
-#define XX(level, v) if (v == #level) return LogLevel::level;
+#define XX(level, v) if (val == #v) return LogLevel::level;
     XX(INFO, INFO)
     XX(DEBUG, DEBUG)
     XX(WARN, WARN)
@@ -97,7 +99,7 @@ public:
 
 class ThreadNameFormatItem: public LogFormatter::FormatItem {
 public:
-    LoggerNameFormatItem(const std::string& str) {}  
+    ThreadNameFormatItem(const std::string& str) {}  
     void format(std::ostream& os, LogEvent::ptr event) override {
         os << event -> getThreadName();
     }
@@ -111,7 +113,7 @@ public:
     }
 };
 
-class LoggerNameFormatItem: public LogFormatter::FormatItem {
+class FiberIdFormatItem: public LogFormatter::FormatItem {
 public:
     FiberIdFormatItem(const std::string& str) {}  
     void format(std::ostream& os, LogEvent::ptr event) override {
@@ -172,9 +174,9 @@ private:
 
 class DateTimeFormatItem: public LogFormatter::FormatItem {
 public:
-    DateTimeFormatItem(const std::string& pattern = "%Y-%m-%d %H:%M:%S"): 
-        m_pattern(pattern) {
-            if (m_pattern.empty())  m_pattern = "%Y-%m-%d %H:%M:%S";
+    DateTimeFormatItem(const std::string& format = "%Y-%m-%d %H:%M:%S"): 
+        m_format(format) {
+            if (m_format.empty())  m_format = "%Y-%m-%d %H:%M:%S";
         }  
 
     void format(std::ostream& os, LogEvent::ptr event) override {
@@ -200,12 +202,12 @@ public:
         time_t time = event -> getTime();
         localtime_r(&time, &tm);
         char buf[64];
-        strftime(buf, sizeof buf, m_formatter.c_str(), &tm);
+        strftime(buf, sizeof buf, m_format.c_str(), &tm);
         os << buf;
     }
 
 private:
-    std::string m_pattern;
+    std::string m_format;
 };
 
 LogFormatter::LogFormatter(const std::string& pattern): m_pattern(pattern) {
@@ -219,7 +221,7 @@ LogFormatter::LogFormatter(const std::string& pattern): m_pattern(pattern) {
 void LogFormatter::init() {
     // 按顺序解析和存储每一个 pattern 项，使用 pair 的原因是需要一个标志位区别当前 pattern 
     // 是格式化项还是普通内容项。格式化项前面是 1，普通内容是 0  。     
-    std::vector<std::pait<int, std::string>> patterns;
+    std::vector<std::pair<int, std::string>> patterns;
     //  临时存储普通内容
     std::string tmp;       
     // 日期项，存储 %d 后面大括号内的内容    
@@ -227,11 +229,14 @@ void LogFormatter::init() {
     // 出错标志位    
     bool error = false;    
     // 正在解析的对象，也就是解析当前字符之前在解析什么。 true 是普通内容， false 是格式化项      
-    bool parsing_string;
+    bool parsing_string = true;
 
     size_t i = 0;
     while (i < m_pattern.size()) {
-        std::string c(1， m_pattern[i]); // char 字符转为 std::string字符串
+        std::string c(1, m_pattern[i]); // char 字符转为 std::string字符串
+        // debug
+        // std::cout << "i: " << i << " c: " << c << " ";
+        
         if (c == "%") {  
             if (parsing_string) {// 此前正在解析的是普通内容项（或者一个格式化项已结束）
                 if (tmp.size()) {   // 临时存储普通内容项的字符串非空
@@ -267,7 +272,10 @@ void LogFormatter::init() {
                     continue;
                 }
 
-                // 则 c == "%" 
+                // debug
+                // std::cout << "i: " << i << " c: " << c << " ";
+
+                // 则 c == "d"
                 i ++;
                 if (i < m_pattern.size() && m_pattern[i] != '{'){
                     // 这种情况会发生吗？可能会发生，如果不指定格式，按照构造函数，应该使用缺省格式。  
@@ -276,6 +284,7 @@ void LogFormatter::init() {
                 }
                 i++; // 否则走到 { 的下一位，开始遍历并向 dateformat 字符串添加日期格式
                 while (i < m_pattern.size() && m_pattern[i] != '}'){
+                    // std::cout << i << ": " << m_pattern[i] << " ";
                     dateformat.push_back(m_pattern[i]);
                     i++;
                 }
@@ -333,11 +342,13 @@ void LogFormatter::init() {
             if (it == s_format_items.end()){
                 std::cout << "[ERROR] LogFormatter::init() " << "pattern: [" << m_pattern 
                 << "] unknown format item: " << v.second << std::endl;
+                // std::cout << dateformat << std::endl;
                 error = true;
                 break;
             }
             else {
-                m_items.push_back(it -> second( it -> first == "p" ? dateformat : "" ));
+                if (it -> first == "d") m_items.push_back(it -> second(dateformat));
+                else m_items.push_back(it -> second(""));
             }
         }
     }
@@ -351,23 +362,23 @@ void LogFormatter::init() {
 
 std::string LogFormatter::format(LogEvent::ptr event) {
     std::stringstream ss;
-    for (auto &it: m_items) i -> format(ss, event);
+    for (auto &it: m_items) it -> format(ss, event);
     return ss.str();
 }
 
 // 标准输出流是个基类，可以接收 cout 也可以接受 stringstream 指针。  
 void LogFormatter::format(std::ostream& os, LogEvent::ptr event) {
-    for (auto &it: m_items) i -> format(os, event);
+    for (auto &it: m_items) it -> format(os, event);
 }
 
 
-LogAppender::LogAppender(LogFormatter::ptr& default_formatter): 
-    m_default_formatter(default_formatter) {
+LogAppender::LogAppender(LogFormatter::ptr default_formatter): 
+    m_default_formatter(default_formatter), m_formatter(nullptr) {
 }
 
-void LogAppender::setFormatter(LogFormatter::ptr formatter):
-    m_formatter(formatter){
+void LogAppender::setFormatter(LogFormatter::ptr formatter) {
     // 次出访至线程竞争应当先加锁再赋值。但我们先实现基础功能，线程安全以后再实现
+    m_formatter = formatter;
 }
 
 LogFormatter::ptr LogAppender::getFormatter() {
@@ -375,13 +386,105 @@ LogFormatter::ptr LogAppender::getFormatter() {
     return m_formatter ? m_formatter : m_default_formatter;
 }
 
+StdoutLogAppender::StdoutLogAppender(): 
+    LogAppender(LogFormatter::ptr(new LogFormatter)){
+}
+
 void StdoutLogAppender::log(LogEvent::ptr event) {
     if (m_formatter)    m_formatter -> format(std::cout, event);
     else        m_default_formatter -> format(std::cout, event);
 }
 
-bool FileLogAppender::reopen()
-
-FileLogAppender::FileLogAppender(const std::string& file): m_filename(file) {
-    reopen
+bool FileLogAppender::reopen() { 
+    // 也应该加锁
+    if (m_filestream) m_filestream.close();
+    m_filestream.open(m_filename, std::ios::app); // 追加模式打开向 m_filename 的标准输出流
+    m_reopenError = !m_filestream;
+    return !m_reopenError; // 返回失败标志位的非
 }
+
+FileLogAppender::FileLogAppender(const std::string& filename): 
+    LogAppender(LogFormatter::ptr(new LogFormatter)){
+    m_filename = filename;
+    reopen();
+    if (m_reopenError)
+        std::cout << "reopen file " << m_filename << " error" <<std::endl;
+}
+
+void FileLogAppender::log(LogEvent::ptr event) {
+    uint64_t now = event -> getTime();
+    if (now >= m_lastTime+3) {
+        reopen();
+        m_lastTime = now;
+        if (m_reopenError) {
+            std::cout << "reopen file " << m_filename << " error" <<std::endl;
+            return;
+        }
+    }
+
+    // 要加锁，锁还没有实现
+
+    if (m_formatter)    m_formatter -> format(m_filestream, event);
+    else        m_default_formatter -> format(m_filestream, event);
+    if (!m_filestream)  
+        std::cout << "[ERROR] FileLogAppender::log() format error" << std::endl;
+}
+
+Logger::Logger(const std::string& name): m_name(name) {
+    m_createTime = time(NULL);
+}
+
+void Logger::addAppender(LogAppender::ptr appender) {
+    // 加锁
+    m_appenders.push_back(appender);
+}
+
+void Logger::delAppender(LogAppender::ptr appender) {
+    // 加锁 
+    for (auto it = m_appenders.begin(); it != m_appenders.end(); it ++){
+        if (*it == appender){
+            m_appenders.erase(it);
+            break;
+        }
+    }
+}
+
+void Logger::clearAppender() {
+    // 加锁
+    m_appenders.clear();
+}
+
+void Logger::log(LogEvent::ptr event) {
+    // 加锁
+    // 只有当事件级别不小于日志器级别的时候，才能输出到每个 m_appenders
+    if (event -> getLevel() >= m_level)
+        for (auto& appender: m_appenders ) 
+            appender -> log(event);
+}
+
+LogEventWarp::LogEventWarp(Logger::ptr logger, LogEvent::ptr event):
+    m_logger(logger), m_event(event){
+}
+
+LogEventWarp::~LogEventWarp(){
+    m_logger -> log(m_event);
+}
+
+LoggerManager::LoggerManager() {
+    m_root.reset(new Logger("root")); // shared_ptr 智能指针内置方法？应该是
+    m_root -> addAppender(LogAppender::ptr(new StdoutLogAppender()));
+    m_loggers[m_root -> getName()] = m_root;
+    // init();
+}
+
+Logger::ptr LoggerManager::getLogger(const std::string& name) {
+    // 加锁
+    auto it = m_loggers.find(name);
+    if (it != m_loggers.end())  return it -> second;
+
+    Logger::ptr logger(new Logger(name));
+    m_loggers[name] = logger;
+    return logger;
+}
+
+} // end sylar

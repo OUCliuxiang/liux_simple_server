@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/log.h
+stdio.h
+-
+time.h
+-
+string
+-
+cstdarg
+-
+memory
+-
+sstream
+-
+fstream
+-
+vector
+-
+list
+-
+map
+-
+
+/root/worksapce/sylarServer/tests/test_log.cpp
+stdio.h
+-
+log.h
+/root/worksapce/sylarServer/tests/log.h
+
