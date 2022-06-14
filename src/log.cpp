@@ -1,7 +1,5 @@
 #include <utility> // std::pair
-
 #include "log.h"
-
 
 namespace sylar{
 
@@ -229,9 +227,161 @@ void LogFormatter::init() {
     // 出错标志位    
     bool error = false;    
     // 正在解析的对象，也就是解析当前字符之前在解析什么。 true 是普通内容， false 是格式化项      
-    bool parsing_string
-    
+    bool parsing_string;
+
+    size_t i = 0;
+    while (i < m_pattern.size()) {
+        std::string c(1， m_pattern[i]); // char 字符转为 std::string字符串
+        if (c == "%") {  
+            if (parsing_string) {// 此前正在解析的是普通内容项（或者一个格式化项已结束）
+                if (tmp.size()) {   // 临时存储普通内容项的字符串非空
+                    patterns.push_back(std::make_pair(0, tmp)); //0 代表非格式化项
+                }
+                tmp.clear();
+                parsing_string = false; // 显然，遇到了 %，要开始解析格式化项了
+                i ++;
+                continue; 
+            }
+            // 遇到了百分号，且截止到上一个字符仍然在解析格式化项，由于一个完整的格式化详解析结束后 
+            // parsing_string 会置 true，此时只有 %% 一种情况
+            else { 
+                patterns.push_back(std::make_pair(1, c)); // 1 是格式化项      
+                parsing_string = true; // 一个格式化项结束，parsing_string 标志位置 true     
+                i++;
+                continue;
+            }
+        }
+        else { // 不是 % 
+            if (parsing_string){ // 继续添加非格式化的普通内容项
+                tmp += c;
+                i ++;
+                continue;
+            }
+            else {  // 格式化字符，必然是一个字符，直接添加到 patterns 中，标志位置 true
+                patterns.push_back(std::make_pair(1, c));
+                parsing_string = true;
+
+                // 日期项需要特别处理，其他格式化项添加到 patterns 结束解析后直接过。
+                if (c != "d"){
+                    i ++;
+                    continue;
+                }
+
+                // 则 c == "%" 
+                i ++;
+                if (i < m_pattern.size() && m_pattern[i] != '{'){
+                    // 这种情况会发生吗？可能会发生，如果不指定格式，按照构造函数，应该使用缺省格式。  
+                    i ++;
+                    continue;
+                }
+                i++; // 否则走到 { 的下一位，开始遍历并向 dateformat 字符串添加日期格式
+                while (i < m_pattern.size() && m_pattern[i] != '}'){
+                    dateformat.push_back(m_pattern[i]);
+                    i++;
+                }
+                if (i == m_pattern.size() || m_pattern[i] != '}'){
+                    // %d 后面的大括号没有闭合，报错退出。但是按照上面的 while 语句，只要没有 } 
+                    // 就一直往后走，最终应该走到结尾，也即 i 越界。加上 || 后面一句判断保险一点。      
+                    std::cout << "[ERROR] LogFormatter::init() " << "pattern: [" <<
+                    m_pattern << "] '{' not closed" << std::endl;
+                    error = true;
+                    break;
+                }
+                // 正常走完大括号。
+                i ++;
+                continue;
+            }
+        }
+    }
+
+    if (error){
+        m_error = true;
+        return ;
+    }
+
+    // 模式解析结束后可能有普通的内容项没有加入到 patterns 
+    if (tmp.size()) {
+        patterns.push_back(std::make_pair(0, tmp));
+        tmp.clear();
+    }
+
+    // std::function<type_return(type_args)> c++11 引入的函数封装器
+    static std::map<std::string, std::function<FormatItem::ptr(const std::string& str)>> s_format_items = {
+#define XX(str, C) {#str, [](const std::string& fmt) {return FormatItem::ptr(new C(fmt));} } 
+        XX(m, MessageFormatItem),           // %m   消息体，事件内容
+        XX(p, LevelFormatItem),             // %p   日志级别
+        XX(c, LoggerNameFormatItem),        // %c   日志器名
+        XX(r, ElapseFormatItem),            // %r   日志器启动至今的时间
+        XX(l, LineFormatItem),              // %l   行号
+        XX(f, FileNameFormatItem),          // %f   文件名
+        XX(t, ThreadIdFormatItem),          // %t   线程 ID
+        XX(F, FiberIdFormatItem),           // %F   协程 ID
+        XX(N, ThreadNameFormatItem),        // %N   线程名
+        XX(T, TabFormatItem),               // %T   tab
+        XX(%, PercentageFormatItem),        // %%   百分号
+        XX(n, NewLineFormatItem),           // %n   换行
+        XX(d, DateTimeFormatItem)           // %d   日期时间
+#undef XX
+    };
+
+    for (auto& v: patterns) {
+        if (v.first == 0) {
+            m_items.push_back(FormatItem::ptr(new StringFormatItem(v.second)));
+        }
+        else {
+            auto it = s_format_items.find(v.second);
+            if (it == s_format_items.end()){
+                std::cout << "[ERROR] LogFormatter::init() " << "pattern: [" << m_pattern 
+                << "] unknown format item: " << v.second << std::endl;
+                error = true;
+                break;
+            }
+            else {
+                m_items.push_back(it -> second( it -> first == "p" ? dateformat : "" ));
+            }
+        }
+    }
+
+    if (error) {
+        m_error = true;
+        return ;
+    }
+
+}
+
+std::string LogFormatter::format(LogEvent::ptr event) {
+    std::stringstream ss;
+    for (auto &it: m_items) i -> format(ss, event);
+    return ss.str();
+}
+
+// 标准输出流是个基类，可以接收 cout 也可以接受 stringstream 指针。  
+void LogFormatter::format(std::ostream& os, LogEvent::ptr event) {
+    for (auto &it: m_items) i -> format(os, event);
 }
 
 
+LogAppender::LogAppender(LogFormatter::ptr& default_formatter): 
+    m_default_formatter(default_formatter) {
+}
+
+void LogAppender::setFormatter(LogFormatter::ptr formatter):
+    m_formatter(formatter){
+    // 次出访至线程竞争应当先加锁再赋值。但我们先实现基础功能，线程安全以后再实现
+}
+
+LogFormatter::ptr LogAppender::getFormatter() {
+    // 同样也应该先加锁再返回，但是先实现基础功能。
+    return m_formatter ? m_formatter : m_default_formatter;
+}
+
+void StdoutLogAppender::log(LogEvent::ptr event) {
+    if (m_formatter)    m_formatter -> format(std::cout, event);
+    else        m_default_formatter -> format(std::cout, event);
+}
+
+bool FileLogAppender::reopen()
+
+FileLogAppender::FileLogAppender(const std::string& file): m_filename(file) {
+    reopen
 }

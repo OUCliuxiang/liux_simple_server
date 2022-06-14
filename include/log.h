@@ -105,7 +105,7 @@ public:
     // 格式化日志事件，返回格式化后的字符串文本
     std::string format(LogEvent::ptr event);
     // 格式化日志事件，返回格式化后的标准输出流
-    std::ostream format(std::ostream& os, LogEvent::ptr event);
+    void format(std::ostream& os, LogEvent::ptr event);
 
     // 只能在 LogFormatter 实例化的 item 类，抽象类，必须且只能派生出解析不同类型格式化项的子类
     class FormatItem {
@@ -126,7 +126,7 @@ private:
 
     // 显然就像上面这个模板，有好多格式化项，每个项都要有一个特定的具体的不同的解析对象
     // 解析项由基类 FormatItem 派生出来，可以有基类指针指向，所有具体解析对象指针放置在数组里
-    std::vector<FormatItem::ptr> items;
+    std::vector<FormatItem::ptr> m_items;
     bool m_error = false;
 };
 
@@ -158,7 +158,7 @@ class StdoutLogAppender: public LogAppender {
 public:
     using ptr = std::shared_ptr<StdoutLogAppender>;
 
-    void log(LogEvent::pre event) override;
+    void log(LogEvent::ptr event) override;
 };
 
 
