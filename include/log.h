@@ -1,6 +1,8 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
+#include "util.h"
+
 #include <stdio.h>  // vprintf 可变参数系列函数
 #include <sys/time.h>   //time_t 时间相关
 #include <string>   
@@ -12,18 +14,37 @@
 #include <list>
 #include <map>
 
+
 // 定义系列宏         
 
-#define SYLAR_LOG_LEVEL(logger, level) \
-    if (level >= logger -> getLevel()) \
-        LogEvent::ptr(new LogEvent(logger -> getName(), level, __FILE__, __LINE__, \
-        sylar::getElapse()))
+// 获取 root 日志器
+#define LIUX_LOG_ROOT liux::LoggerMgr::GetInstance() -> getRoot()
 
-#define SYLAR_LOG_DEBUG(logger) 
+// 获取指定名称日志器 
+#define LIUX_LOG_NAME(name) liux::LoggerMgr::GetInstance() -> getLogger(name)
+
+// __FILE__ 返回当前文件路径         
+// __LINE__ 返回当前行     
+#define LIUX_LOG_LEVEL(logger, level) \
+    if (level >= logger -> getLevel()) \
+        liux::LogEvent::ptr(new liux::LogEvent(logger -> getName(), level, __FILE__, \
+        __LINE__, liux::GetElapse(), liux::GetThreadId(), liux::GetFiberId(), \
+        time(NULL), liux::GetThreadName())) -> getContent()
+
+#define LIUX_LOG_INFO(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::INFO)
+#define LIUX_LOG_DEBUG(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::DEBUG)
+#define LIUX_LOG_WARN(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::WARN)
+#define LIUX_LOG_ERROR(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::ERROR)
+#define LIUX_LOG_FATAL(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::FATAL) 
+
+// __VA_AGRS__ 宏接收的可变参数列表            
+#define LIUX_LOG_FMT_LEVEL(logger, level) \
+    if (level >= logger -> getLevel()) \
+
 
 // 宏定义结束
 
-namespace sylar{
+namespace liux{
 
 class LogLevel{
 public:
@@ -67,6 +88,7 @@ public:
     
     const LogLevel::Level getLevel() const {return m_level;}
     const std::string getContent() const {return m_ss.str();}
+    std::stringstream& getSS() {return m_ss;}
     const char* getFile() const {return m_file;}
     uint32_t getLine() const {return m_line;}
     uint64_t getElapse() const {return m_elapse;}
@@ -250,19 +272,19 @@ private:
 class LoggerManager {
 public:
     using ptr = std::shared_ptr<LoggerManager>;
-    ptr GetInstance()
     LoggerManager();
     void init();
     Logger::ptr getLogger(const std::string& name);
-    Logger::ptr getRoot();
+    Logger::ptr getRoot() const {return m_root;}
 
 private:
     std::map<std::string, Logger::ptr> m_loggers;
     Logger::ptr m_root; // 根日志器
 };
 
-using LoggerMgr = sylar::Singleton<LoggerManager>;
+// 单例，裸指针
+using LoggerMgr = liux::Singleton<LoggerManager>;
 
-}
+} // end namespace liux
 
-#endif
+#endif // __LOG_H__

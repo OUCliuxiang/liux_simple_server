@@ -1,7 +1,7 @@
 // util 功能函数文件
 
-#ifndef __SYLAR_UTIL_H__
-#define __SYLAR_UTIL_H__
+#ifndef _UTIL_H__
+#define _UTIL_H__
 
 // 存储各种 typedef 重定义的基本类型，如 pid_t, time_t, size_t 等等，便于移植
 #include <sys/type.h> 
@@ -12,7 +12,7 @@
 #include <vector>
 #include <iostream>
 
-namespace sylar {
+namespace liux {
 
 // 获取线程 ID
 pid_t GetThreadId();
@@ -116,6 +116,6 @@ public:
 
 }; // end TypeUtil
 
-} // end sylar namespace
+} // end liux namespace
 
-#endif
+#endif // __UTIL_H__

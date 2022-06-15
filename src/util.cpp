@@ -4,7 +4,7 @@
 #include <unistd.h>     // SYS_gettid 
 #include <sys/syscall>  // syscall()
 
-namespace sylar {
+namespace liux {
 
 pid_t GetThreadId() {
     // 获取调用这个函数的线程的真实ID，而不是 POSIX 中 pthread_t 线程的可能存在重复的 id
@@ -110,4 +110,4 @@ time_t Str2Time(const char* str, const char* format) {
     return mktime(&t);
 }
 
-} // end sylar
+} // end liux

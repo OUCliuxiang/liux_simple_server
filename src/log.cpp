@@ -3,7 +3,7 @@
 #include <iostream>
 #include "log.h"
 
-namespace sylar{
+namespace liux{
 
 const char* LogLevel::toString(LogLevel::Level level){
     switch (level) {
@@ -42,6 +42,16 @@ void LogEvent::printf(const char* fmt, ...) {
     va_start(ap, fmt);  // 将 fmt 后面的参数添加到可变参数列表 ap
     vprintf(fmt, ap);   
     va_end(ap);
+}
+
+// 宏调用时在宏中已经产生 va_list
+void LogEvent::vprintf(const char* fmt, va_list ap) {
+    char* buf = nullptr;
+    int len = vasprintf(&buf, fmt, ap);
+    if (len != -1){
+        m_ss << std::string(buf, len);
+        free(buf);
+    }
 }
 
 
@@ -466,6 +476,7 @@ LogEventWarp::LogEventWarp(Logger::ptr logger, LogEvent::ptr event):
     m_logger(logger), m_event(event){
 }
 
+// 包装器析构的时候写日志
 LogEventWarp::~LogEventWarp(){
     m_logger -> log(m_event);
 }
@@ -487,4 +498,4 @@ Logger::ptr LoggerManager::getLogger(const std::string& name) {
     return logger;
 }
 
-} // end sylar
+} // end liux
