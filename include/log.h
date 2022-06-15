@@ -2,7 +2,7 @@
 #define __LOG_H__
 
 #include <stdio.h>  // vprintf 可变参数系列函数
-#include <time.h>   //time_t 时间相关
+#include <sys/time.h>   //time_t 时间相关
 #include <string>   
 #include <cstdarg>
 #include <memory>
@@ -11,6 +11,17 @@
 #include <vector>
 #include <list>
 #include <map>
+
+// 定义系列宏         
+
+#define SYLAR_LOG_LEVEL(logger, level) \
+    if (level >= logger -> getLevel()) \
+        LogEvent::ptr(new LogEvent(logger -> getName(), level, __FILE__, __LINE__, \
+        sylar::getElapse()))
+
+#define SYLAR_LOG_DEBUG(logger) 
+
+// 宏定义结束
 
 namespace sylar{
 
@@ -34,9 +45,16 @@ class LogEvent{
 public:
     using ptr = std::shared_ptr<LogEvent>; // 智能指针来自于 <memory> 头文件
 
-    LogEvent(const std::string& loggerName, LogLevel::Level level, const char* file, 
-             uint32_t line, uint64_t elapse, uint32_t threadId, uint32_t fiberId, 
-             time_t time, const std::string& threadName): 
+    LogEvent(const std::string& loggerName, 
+             LogLevel::Level level, 
+             const char* file, 
+             uint32_t line, 
+             uint64_t elapse, 
+             uint32_t threadId, 
+             uint32_t fiberId, 
+             time_t time, 
+             const std::string& threadName): 
+             
              m_loggerName(loggerName), 
              m_level(level), 
              m_file(file), 
@@ -231,6 +249,8 @@ private:
 // 日志器管理模块 
 class LoggerManager {
 public:
+    using ptr = std::shared_ptr<LoggerManager>;
+    ptr GetInstance()
     LoggerManager();
     void init();
     Logger::ptr getLogger(const std::string& name);
@@ -240,6 +260,8 @@ private:
     std::map<std::string, Logger::ptr> m_loggers;
     Logger::ptr m_root; // 根日志器
 };
+
+using LoggerMgr = sylar::Singleton<LoggerManager>;
 
 }
 
