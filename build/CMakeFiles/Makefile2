@@ -63,39 +63,39 @@ CMAKE_SOURCE_DIR = /root/worksapce/sylarServer
 CMAKE_BINARY_DIR = /root/worksapce/sylarServer/build
 
 #=============================================================================
-# Target rules for target CMakeFiles/sylar.dir
+# Target rules for target CMakeFiles/liux.dir
 
 # All Build rule for target.
-CMakeFiles/sylar.dir/all:
-	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/depend
-	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/worksapce/sylarServer/build/CMakeFiles --progress-num=1,2 "Built target sylar"
-.PHONY : CMakeFiles/sylar.dir/all
+CMakeFiles/liux.dir/all:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/depend
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/worksapce/sylarServer/build/CMakeFiles --progress-num=1,2 "Built target liux"
+.PHONY : CMakeFiles/liux.dir/all
 
 # Include target in all.
-all: CMakeFiles/sylar.dir/all
+all: CMakeFiles/liux.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/sylar.dir/rule: cmake_check_build_system
+CMakeFiles/liux.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/worksapce/sylarServer/build/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/sylar.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/liux.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /root/worksapce/sylarServer/build/CMakeFiles 0
-.PHONY : CMakeFiles/sylar.dir/rule
+.PHONY : CMakeFiles/liux.dir/rule
 
 # Convenience name for target.
-sylar: CMakeFiles/sylar.dir/rule
+liux: CMakeFiles/liux.dir/rule
 
-.PHONY : sylar
-
-# clean rule for target.
-CMakeFiles/sylar.dir/clean:
-	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/clean
-.PHONY : CMakeFiles/sylar.dir/clean
+.PHONY : liux
 
 # clean rule for target.
-clean: CMakeFiles/sylar.dir/clean
+CMakeFiles/liux.dir/clean:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/clean
+.PHONY : CMakeFiles/liux.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/liux.dir/clean
 
 .PHONY : clean
 
@@ -103,7 +103,7 @@ clean: CMakeFiles/sylar.dir/clean
 # Target rules for target CMakeFiles/test_log.dir
 
 # All Build rule for target.
-CMakeFiles/test_log.dir/all: CMakeFiles/sylar.dir/all
+CMakeFiles/test_log.dir/all: CMakeFiles/liux.dir/all
 	$(MAKE) -f CMakeFiles/test_log.dir/build.make CMakeFiles/test_log.dir/depend
 	$(MAKE) -f CMakeFiles/test_log.dir/build.make CMakeFiles/test_log.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/root/worksapce/sylarServer/build/CMakeFiles --progress-num=3,4 "Built target test_log"

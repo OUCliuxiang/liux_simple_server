@@ -114,17 +114,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named sylar
+# Target rules for targets named liux
 
 # Build rule for target.
-sylar: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sylar
-.PHONY : sylar
+liux: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 liux
+.PHONY : liux
 
 # fast build rule for target.
-sylar/fast:
-	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/build
-.PHONY : sylar/fast
+liux/fast:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/build
+.PHONY : liux/fast
 
 #=============================================================================
 # Target rules for targets named test_log
@@ -145,7 +145,7 @@ src/log.o: src/log.cpp.o
 
 # target to build an object file
 src/log.cpp.o:
-	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/src/log.cpp.o
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/log.cpp.o
 .PHONY : src/log.cpp.o
 
 src/log.i: src/log.cpp.i
@@ -154,7 +154,7 @@ src/log.i: src/log.cpp.i
 
 # target to preprocess a source file
 src/log.cpp.i:
-	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/src/log.cpp.i
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/log.cpp.i
 .PHONY : src/log.cpp.i
 
 src/log.s: src/log.cpp.s
@@ -163,7 +163,7 @@ src/log.s: src/log.cpp.s
 
 # target to generate assembly for a file
 src/log.cpp.s:
-	$(MAKE) -f CMakeFiles/sylar.dir/build.make CMakeFiles/sylar.dir/src/log.cpp.s
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/log.cpp.s
 .PHONY : src/log.cpp.s
 
 tests/test_log.o: tests/test_log.cpp.o
@@ -200,7 +200,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... sylar"
+	@echo "... liux"
 	@echo "... edit_cache"
 	@echo "... test_log"
 	@echo "... src/log.o"

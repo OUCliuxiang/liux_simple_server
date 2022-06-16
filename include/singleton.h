@@ -1,7 +1,7 @@
 // 单例模式封装
 
-#ifndef __SYLAY_SINGLETON_H__
-#define __SYLAY_SINGLETON_H__
+#ifndef __SINGLETON_H__
+#define __SINGLETON_H__
 
 #include <memory> // std::shared_ptr
 
@@ -21,12 +21,12 @@ public:
 template<class T> 
 class SingletonPtr {
 public:
-    static std::shared<T>T GetInstance() {
+    static std::shared_ptr<T> GetInstance() {
         static std::shared_ptr<T> v(new T);
         return v;
     }
 };
 
-}
+} // end namespace liux
 
 #endif

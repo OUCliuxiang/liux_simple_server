@@ -2,6 +2,7 @@
 #define __LOG_H__
 
 #include "util.h"
+#include "singleton.h"
 
 #include <stdio.h>  // vprintf 可变参数系列函数
 #include <sys/time.h>   //time_t 时间相关
@@ -29,7 +30,7 @@
     if (level >= logger -> getLevel()) \
         liux::LogEvent::ptr(new liux::LogEvent(logger -> getName(), level, __FILE__, \
         __LINE__, liux::GetElapse(), liux::GetThreadId(), liux::GetFiberId(), \
-        time(NULL), liux::GetThreadName())) -> getContent()
+        time(NULL), liux::GetThreadName())) -> getSS()
 
 #define LIUX_LOG_INFO(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::INFO)
 #define LIUX_LOG_DEBUG(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::DEBUG)
@@ -38,9 +39,17 @@
 #define LIUX_LOG_FATAL(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::FATAL) 
 
 // __VA_AGRS__ 宏接收的可变参数列表            
-#define LIUX_LOG_FMT_LEVEL(logger, level) \
+#define LIUX_LOG_FMT_LEVEL(logger, level, fmt, ...) \
     if (level >= logger -> getLevel()) \
+        liux::LogEvent::ptr(new liux::LogEvent(logger -> getName(), level, __FILE__, \
+        __LINE__, liux::GetElapse(), liux::GetThreadId(), liux::GetFiberId(), \
+        time(NULL), liux::GetThreadName())) -> printf(fmt, __VA_AGRS__);
 
+#define LIUX_LOG_FMT_INFO(logger, fmt, ...) LIUX_LOG_LEVEL(logger, liux::LogLevel::INFO, fmt, __VA_ARGS__)
+#define LIUX_LOG_FMT_DEBUG(logger, fmt, ...) LIUX_LOG_LEVEL(logger, liux::LogLevel::DEBUG, __VA_ARGS__)
+#define LIUX_LOG_FMT_WARN(logger, fmt, ...) LIUX_LOG_LEVEL(logger, liux::LogLevel::WARN, __VA_ARGS__)
+#define LIUX_LOG_FMT_ERROR(logger, fmt, ...) LIUX_LOG_LEVEL(logger, liux::LogLevel::ERROR, __VA_ARGS__)
+#define LIUX_LOG_FMT_FATAL(logger, fmt, ...) LIUX_LOG_LEVEL(logger, liux::LogLevel::FATAL, __VA_ARGS__) 
 
 // 宏定义结束
 
@@ -100,6 +109,8 @@ public:
     void setLoggerName(const std::string str) {m_loggerName = str;}
     // 可变参数打印到标准输出
     void printf(const char* fmt, ...);
+    // 可变参数打印到 stringstream 流 
+    void vprintf(const char* fmt, va_list ap);
 
 private:
     std::string m_loggerName;       // 日志器名
@@ -283,7 +294,7 @@ private:
 };
 
 // 单例，裸指针
-using LoggerMgr = liux::Singleton<LoggerManager>;
+using LoggerMgr = liux::SingletonPtr<LoggerManager>;
 
 } // end namespace liux
 

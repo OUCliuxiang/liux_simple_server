@@ -130,7 +130,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=sylar
+CMAKE_PROJECT_NAME:STATIC=liux
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -180,6 +180,15 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // during the make.  This is useful for debugging only. With Visual
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
+
+//Value Computed by CMake
+liux_BINARY_DIR:STATIC=/root/worksapce/sylarServer/build
+
+//Dependencies for target
+liux_LIB_DEPENDS:STATIC=
+
+//Value Computed by CMake
+liux_SOURCE_DIR:STATIC=/root/worksapce/sylarServer
 
 //Value Computed by CMake
 sylar_BINARY_DIR:STATIC=/root/worksapce/sylarServer/build

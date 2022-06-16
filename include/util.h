@@ -4,7 +4,7 @@
 #define _UTIL_H__
 
 // 存储各种 typedef 重定义的基本类型，如 pid_t, time_t, size_t 等等，便于移植
-#include <sys/type.h> 
+#include <sys/types.h> 
 #include <stdint.h> // typedef 重定义的整型类型，uint8_t, INT_MAX 等等
 #include <sys/time.h>
 // #include <cxxabi.h>
@@ -106,7 +106,7 @@ public:
     static double Atof(const std::string& str);
     
     // 字符数组转字符，返回 str[0]
-    static int_8 ToChar(const char* str);
+    static int8_t ToChar(const char* str);
     
     // atoi
     static int64_t Atoi(const char* str);

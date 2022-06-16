@@ -44,7 +44,6 @@ void LogEvent::printf(const char* fmt, ...) {
     va_end(ap);
 }
 
-// 宏调用时在宏中已经产生 va_list
 void LogEvent::vprintf(const char* fmt, va_list ap) {
     char* buf = nullptr;
     int len = vasprintf(&buf, fmt, ap);

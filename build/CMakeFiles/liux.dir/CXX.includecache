@@ -50,9 +50,13 @@ vector
 iostream
 -
 
-/root/worksapce/sylarServer/tests/test_log.cpp
-stdio.h
+/root/worksapce/sylarServer/src/log.cpp
+utility
+-
+functional
+-
+iostream
 -
 log.h
-/root/worksapce/sylarServer/tests/log.h
+/root/worksapce/sylarServer/src/log.h
 
