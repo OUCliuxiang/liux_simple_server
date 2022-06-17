@@ -3,9 +3,12 @@
 #ifndef __MUTEX_H__
 #define __MUTEX_H__
 
+#include <memory>
 #include <stdint.h> // uint32_t 等重定义整型类型
 #include <semaphore.h> // 信号量相关
-#include <pthread.h> // 线程相关，包括 lock(), unlock() 加锁解锁
+#include <pthread.h> // 线程相关，包括 lock(), unlock() 加锁解锁, mutex 互斥量
+
+#include <atomic>   // 原子量相关
 
 namespace liux {
 
@@ -61,14 +64,14 @@ private:
 
 // 局部读锁模板
 template<class T>
-struct ReadScopedLockImp {
+struct ReadScopedLockImpl {
 public:
-    ReadScopedLockImp(T& mutex): m_mutex(mutex) {
+    ReadScopedLockImpl(T& mutex): m_mutex(mutex) {
         m_mutex.rdlock();
         m_locked = true;
     }
 
-    ~ReadScopedLockImp() {
+    ~ReadScopedLockImpl() {
         unlock();
     }
 
@@ -89,8 +92,150 @@ public:
 private:
     T& m_mutex;
     bool m_locked;
-}
+};
 
+// 局部写锁模板
+template<class T> 
+struct WriteScopedLockImpl {
+public:
+    WriteScopedLockImpl(T& mutex): m_mutex(mutex) {
+        m_mutex.wrlock();
+        m_locked = true;
+    }
+
+    ~WriteScopedLockImpl() {
+        unlock();
+    }
+
+    void lock() {
+        if (!m_locked) {
+            m_mutex.wrlock();
+            m_locked = true;
+        }
+    }
+
+    void unlock() {
+        if (m_locked) {
+            m_mutex.unlock();
+            m_locked = false;
+        }
+    }
+private:
+    T& m_mutex;
+    bool m_locked;
+};
+
+// 互斥量，不可复制            
+class Mutex: public Noncopyable {
+public:
+    // 互斥量局部锁
+    using Lock = ScopedLockImpl<Mutex>;
+    
+    Mutex() {
+        pthread_mutex_init(&m_mutex, nullptr);
+    }
+
+    ~Mutex() {
+        pthread_muetx_destroy(&m_mutex);
+    }
+    
+    void lock() {
+        pthread_mutex_lock(&m_mutex);
+    }
+
+    void unlock() {
+        pthread_mutex_unlock(&m_mutex);
+    }
+
+private: 
+    // 互斥量
+    pthread_mutex_t m_mutex;
+};
+
+// 读写互斥量         
+class RWMutex: Noncopyable {
+public:
+    // 局部读锁
+    using ReadLock = ReadScopedLockImpl<RWMutex>;
+    // 局部写锁 
+    using WriteLock= WriteScopedLockImpl<RWMutex>;
+
+    RWMutex() {
+        pthread_rwlock_init(&m_lock, nullptr);
+    }
+
+    ~RWMutex() {
+        pthread_rwlock_destroy(&m_lock);
+    }
+
+    void rdlock() {
+        pthread_rwlock_rdlock(&m_lock);
+    }
+
+    void wrlock() {
+        pthread_rwlock_wrlock(&m_lock);
+    }
+
+    void unlock() {
+        pthread_rwlock_unlock(&m_lock);
+    }
+private:
+    // 读写锁
+    pthread_rwlock_t m_lock;
+};
+
+// 自旋锁
+class SpinLock: Noncopyable {
+public:
+    using Lock = ScopedLockImpl<SpinLock>;
+
+    SpinLock() {
+        pthread_spin_init( &m_lock, nullptr);
+    }
+
+    ~SpinLock() {
+        pthread_spin_destroy( &m_lock);
+    }
+
+    void lock() {
+        pthread_spin_lock(&m_lock);
+    }
+
+    void unlock() {
+        pthread_spin_unlock(&m_lock);
+    }
+
+private:
+    pthread_spinlock_t m_lock;
+};
+
+// 原子锁 
+class CASLock: Noncopyable {
+public:
+    using Lock = ScopedLockImpl<CASLock>;
+
+    CASLock() {
+        m_mutex.clear();
+    }
+
+    ~CASLock() {
+    }
+
+    void lock() {
+        while (std::atomic_flag_test_and_set_explicit(&m_mutex, std::memory_order_acquire));
+    }
+
+    void unlock() {
+        std::atomic_flag_clear_explicit(&m_mutex, std::memory_order_release);
+    }
+
+private:
+    // volatile 修饰的变量不被编译器优化，每次使用时从它的地址而不是cpu 寄存器中读取
+    // volatile 允许来自非编译器的更改，比如操作系统等。
+    // 原子状态
+    volatile std::atomic_flag m_mutex;
+
+};
 
 } // end namespace liux
 
