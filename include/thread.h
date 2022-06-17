@@ -15,19 +15,19 @@ class Thread: public Nocopyable {
 public:
     using ptr = std::shared_ptr<Thread>;
 
-    Thread(std::function<void()> cb, const std::string name);
+    Thread(std::function<void()> cb, const std::string& name);
 
     ~Thread();
 
     pid_t getId() const {return m_id; }
-    const std::string getName() const {return m_name; }
+    const std::string& getName() const {return m_name; }
 
     // 等待线程执行完毕   
     void join();
     // 获取当前线程指针。为什么要静态？不理解啊。
     static Thread* GetThis();
     // 获取当前线程名。为什么要静态？不理解啊。      
-    static const std::string GetName();
+    static const std::string& GetName();
     // 设置当前线程名。为什么要静态？不理解。      
     static void SetName(const std::string& name);
 

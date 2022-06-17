@@ -96,7 +96,7 @@ public:
              m_threadName(threadName) {}
     
     const LogLevel::Level getLevel() const {return m_level;}
-    const std::string getContent() const {return m_ss.str();}
+    const std::string& getContent() const {return m_ss.str();}
     std::stringstream& getSS() {return m_ss;}
     const char* getFile() const {return m_file;}
     uint32_t getLine() const {return m_line;}
@@ -104,9 +104,9 @@ public:
     uint32_t getThreadId() const {return m_threadId;}
     uint32_t getFiberId() const {return m_fiberId;}
     time_t getTime() const {return m_time;}
-    const std::string getThreadName() const {return m_threadName;}
-    const std::string getLoggerName() const {return m_loggerName;}
-    void setLoggerName(const std::string str) {m_loggerName = str;}
+    const std::string& getThreadName() const {return m_threadName;}
+    const std::string& getLoggerName() const {return m_loggerName;}
+    void setLoggerName(const std::string& str) {m_loggerName = str;}
     // 可变参数打印到标准输出
     void printf(const char* fmt, ...);
     // 可变参数打印到 stringstream 流 

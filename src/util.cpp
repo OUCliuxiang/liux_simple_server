@@ -39,7 +39,7 @@ std::string GetThreadName() {
     return std::string(thread_name);
 }
 
-void SetThreadName(const std::string &name) {
+void SetThreadName(const std::string& name) {
     pthread_setname_np(pthread_self(), name.substr(0, 15).c_str());
 }
 
