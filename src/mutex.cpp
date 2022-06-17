@@ -15,13 +15,13 @@ Semaphore::~Semaphore() {
     sem_destroy(&m_semaphore);
 }
 
-Semaphore::wait() {
+void Semaphore::wait() {
     if (sem_wait(&m_semaphore)) {
         throw std::logic_error("sem_wait error");
     }
 }
 
-Semaphore::notify() {
+void Semaphore::notify() {
     if (sem_post(&m_semaphore)) {
         throw std::logic_error("sem_post error");
     }

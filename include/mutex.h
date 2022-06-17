@@ -6,14 +6,15 @@
 #include <memory>
 #include <stdint.h> // uint32_t 等重定义整型类型
 #include <semaphore.h> // 信号量相关
-#include <pthread.h> // 线程相关，包括 lock(), unlock() 加锁解锁, mutex 互斥量
-
+#include <pthread.h>    // 线程相关，包括 lock(), unlock() 加锁解锁, mutex 互斥量
 #include <atomic>   // 原子量相关
+
+#include "nocopyable.h"
 
 namespace liux {
 
 // 信号量，不可拷贝
-class Semaphore: Noncopyable {
+class Semaphore: public Nocopyable {
 public:
     // 信号量值的大小
     Semaphore(uint32_t count = 0);
@@ -25,10 +26,10 @@ public:
 
 private:
     sem_t m_semaphore;
-}
+};
 
 // 局部锁模板 
-template<T>
+template<class T>
 struct ScopedLockImpl {
 public:
     // 构造即上锁
@@ -126,7 +127,7 @@ private:
 };
 
 // 互斥量，不可复制            
-class Mutex: public Noncopyable {
+class Mutex: public Nocopyable {
 public:
     // 互斥量局部锁
     using Lock = ScopedLockImpl<Mutex>;
@@ -136,7 +137,7 @@ public:
     }
 
     ~Mutex() {
-        pthread_muetx_destroy(&m_mutex);
+        pthread_mutex_destroy(&m_mutex);
     }
     
     void lock() {
@@ -153,7 +154,7 @@ private:
 };
 
 // 读写互斥量         
-class RWMutex: Noncopyable {
+class RWMutex: Nocopyable {
 public:
     // 局部读锁
     using ReadLock = ReadScopedLockImpl<RWMutex>;
@@ -185,12 +186,12 @@ private:
 };
 
 // 自旋锁
-class SpinLock: Noncopyable {
+class SpinLock: Nocopyable {
 public:
     using Lock = ScopedLockImpl<SpinLock>;
 
     SpinLock() {
-        pthread_spin_init( &m_lock, nullptr);
+        pthread_spin_init( &m_lock, 0);
     }
 
     ~SpinLock() {
@@ -210,7 +211,7 @@ private:
 };
 
 // 原子锁 
-class CASLock: Noncopyable {
+class CASLock: Nocopyable {
 public:
     using Lock = ScopedLockImpl<CASLock>;
 

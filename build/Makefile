@@ -126,18 +126,32 @@ liux/fast:
 	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/build
 .PHONY : liux/fast
 
-#=============================================================================
-# Target rules for targets named test_log
+src/config.o: src/config.cpp.o
 
-# Build rule for target.
-test_log: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_log
-.PHONY : test_log
+.PHONY : src/config.o
 
-# fast build rule for target.
-test_log/fast:
-	$(MAKE) -f CMakeFiles/test_log.dir/build.make CMakeFiles/test_log.dir/build
-.PHONY : test_log/fast
+# target to build an object file
+src/config.cpp.o:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/config.cpp.o
+.PHONY : src/config.cpp.o
+
+src/config.i: src/config.cpp.i
+
+.PHONY : src/config.i
+
+# target to preprocess a source file
+src/config.cpp.i:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/config.cpp.i
+.PHONY : src/config.cpp.i
+
+src/config.s: src/config.cpp.s
+
+.PHONY : src/config.s
+
+# target to generate assembly for a file
+src/config.cpp.s:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/config.cpp.s
+.PHONY : src/config.cpp.s
 
 src/log.o: src/log.cpp.o
 
@@ -166,32 +180,59 @@ src/log.cpp.s:
 	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/log.cpp.s
 .PHONY : src/log.cpp.s
 
-tests/test_log.o: tests/test_log.cpp.o
+src/mutex.o: src/mutex.cpp.o
 
-.PHONY : tests/test_log.o
+.PHONY : src/mutex.o
 
 # target to build an object file
-tests/test_log.cpp.o:
-	$(MAKE) -f CMakeFiles/test_log.dir/build.make CMakeFiles/test_log.dir/tests/test_log.cpp.o
-.PHONY : tests/test_log.cpp.o
+src/mutex.cpp.o:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/mutex.cpp.o
+.PHONY : src/mutex.cpp.o
 
-tests/test_log.i: tests/test_log.cpp.i
+src/mutex.i: src/mutex.cpp.i
 
-.PHONY : tests/test_log.i
+.PHONY : src/mutex.i
 
 # target to preprocess a source file
-tests/test_log.cpp.i:
-	$(MAKE) -f CMakeFiles/test_log.dir/build.make CMakeFiles/test_log.dir/tests/test_log.cpp.i
-.PHONY : tests/test_log.cpp.i
+src/mutex.cpp.i:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/mutex.cpp.i
+.PHONY : src/mutex.cpp.i
 
-tests/test_log.s: tests/test_log.cpp.s
+src/mutex.s: src/mutex.cpp.s
 
-.PHONY : tests/test_log.s
+.PHONY : src/mutex.s
 
 # target to generate assembly for a file
-tests/test_log.cpp.s:
-	$(MAKE) -f CMakeFiles/test_log.dir/build.make CMakeFiles/test_log.dir/tests/test_log.cpp.s
-.PHONY : tests/test_log.cpp.s
+src/mutex.cpp.s:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/mutex.cpp.s
+.PHONY : src/mutex.cpp.s
+
+src/util.o: src/util.cpp.o
+
+.PHONY : src/util.o
+
+# target to build an object file
+src/util.cpp.o:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/util.cpp.o
+.PHONY : src/util.cpp.o
+
+src/util.i: src/util.cpp.i
+
+.PHONY : src/util.i
+
+# target to preprocess a source file
+src/util.cpp.i:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/util.cpp.i
+.PHONY : src/util.cpp.i
+
+src/util.s: src/util.cpp.s
+
+.PHONY : src/util.s
+
+# target to generate assembly for a file
+src/util.cpp.s:
+	$(MAKE) -f CMakeFiles/liux.dir/build.make CMakeFiles/liux.dir/src/util.cpp.s
+.PHONY : src/util.cpp.s
 
 # Help Target
 help:
@@ -202,13 +243,18 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... liux"
 	@echo "... edit_cache"
-	@echo "... test_log"
+	@echo "... src/config.o"
+	@echo "... src/config.i"
+	@echo "... src/config.s"
 	@echo "... src/log.o"
 	@echo "... src/log.i"
 	@echo "... src/log.s"
-	@echo "... tests/test_log.o"
-	@echo "... tests/test_log.i"
-	@echo "... tests/test_log.s"
+	@echo "... src/mutex.o"
+	@echo "... src/mutex.i"
+	@echo "... src/mutex.s"
+	@echo "... src/util.o"
+	@echo "... src/util.i"
+	@echo "... src/util.s"
 .PHONY : help
 
 

@@ -2,7 +2,10 @@
 #include "util.h"
 
 #include <unistd.h>     // SYS_gettid 
-#include <sys/syscall>  // syscall()
+#include <sys/syscall.h>  // syscall()
+#include <algorithm>
+#include <cstring>
+
 
 namespace liux {
 
@@ -103,7 +106,7 @@ std::string Time2Str(time_t ts, const std::string &format) {
 
 time_t Str2Time(const char* str, const char* format) {
     struct tm t;
-    memset(&t, 0, sizeof(t));
+    std::memset(&t, 0, sizeof(t));
     if (!strptime(str, format, &t)) {
         return 0;
     }

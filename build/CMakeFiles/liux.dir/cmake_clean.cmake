@@ -1,5 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/liux.dir/src/log.cpp.o"
+  "CMakeFiles/liux.dir/src/config.cpp.o"
+  "CMakeFiles/liux.dir/src/util.cpp.o"
+  "CMakeFiles/liux.dir/src/mutex.cpp.o"
   "../lib/libliux.pdb"
   "../lib/libliux.so"
 )
