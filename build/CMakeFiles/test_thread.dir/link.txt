@@ -1,0 +1,1 @@
+/usr/bin/c++   -rdynamic -fPIC -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function  -rdynamic CMakeFiles/test_thread.dir/tests/test_thread.cpp.o  -o ../bin/test_thread -Wl,-rpath,/root/worksapce/sylarServer/lib ../lib/libliux_log.so ../lib/libliux_config.so ../lib/libliux_util.so ../lib/libliux_mutex.so ../lib/libliux_thread.so -lpthread 

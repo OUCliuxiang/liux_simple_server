@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC  -rdynamic -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function  -shared -Wl,-soname,libliux.so -o ../lib/libliux.so CMakeFiles/liux.dir/src/log.cpp.o CMakeFiles/liux.dir/src/config.cpp.o CMakeFiles/liux.dir/src/util.cpp.o CMakeFiles/liux.dir/src/mutex.cpp.o 

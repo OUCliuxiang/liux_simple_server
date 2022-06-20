@@ -471,12 +471,12 @@ void Logger::log(LogEvent::ptr event) {
             appender -> log(event);
 }
 
-LogEventWarp::LogEventWarp(Logger::ptr logger, LogEvent::ptr event):
+LogEventWrap::LogEventWrap(Logger::ptr logger, LogEvent::ptr event):
     m_logger(logger), m_event(event){
 }
 
 // 包装器析构的时候写日志
-LogEventWarp::~LogEventWarp(){
+LogEventWrap::~LogEventWrap(){
     m_logger -> log(m_event);
 }
 

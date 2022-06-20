@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/util.h
+sys/types.h
+-
+stdint.h
+-
+sys/time.h
+-
+string
+-
+vector
+-
+iostream
+-
+
+/root/worksapce/sylarServer/src/util.cpp
+util.h
+/root/worksapce/sylarServer/src/util.h
+unistd.h
+-
+sys/syscall.h
+-
+algorithm
+-
+cstring
+-
+

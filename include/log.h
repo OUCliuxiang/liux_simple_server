@@ -19,18 +19,21 @@
 // 定义系列宏         
 
 // 获取 root 日志器
-#define LIUX_LOG_ROOT liux::LoggerMgr::GetInstance() -> getRoot()
+#define LIUX_LOG_ROOT() liux::LoggerMgr::GetInstance() -> getRoot()
 
 // 获取指定名称日志器 
 #define LIUX_LOG_NAME(name) liux::LoggerMgr::GetInstance() -> getLogger(name)
 
 // __FILE__ 返回当前文件路径         
 // __LINE__ 返回当前行     
+// 这里要构造一个 Wrap 将 logger 和 LogEvent 等装起来，一边析构的时候自动写日志。
+// 如果只写一个 LogEvent 的话，日志不知道写到哪里去，或者说，不会写出。
 #define LIUX_LOG_LEVEL(logger, level) \
     if (level >= logger -> getLevel()) \
-        liux::LogEvent::ptr(new liux::LogEvent(logger -> getName(), level, __FILE__, \
-        __LINE__, liux::GetElapse(), liux::GetThreadId(), liux::GetFiberId(), \
-        time(NULL), liux::GetThreadName())) -> getSS()
+        liux::LogEventWrap(logger, liux::LogEvent::ptr(new liux::LogEvent( \
+        logger -> getName(), level, __FILE__, __LINE__, liux::GetElapsedMS(), \
+        liux::GetThreadId(), liux::GetFiberId(), time(NULL), \
+        liux::GetThreadName()))).getLogEvent() -> getSS()
 
 #define LIUX_LOG_INFO(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::INFO)
 #define LIUX_LOG_DEBUG(logger) LIUX_LOG_LEVEL(logger, liux::LogLevel::DEBUG)
@@ -41,9 +44,10 @@
 // __VA_AGRS__ 宏接收的可变参数列表            
 #define LIUX_LOG_FMT_LEVEL(logger, level, fmt, ...) \
     if (level >= logger -> getLevel()) \
-        liux::LogEvent::ptr(new liux::LogEvent(logger -> getName(), level, __FILE__, \
-        __LINE__, liux::GetElapse(), liux::GetThreadId(), liux::GetFiberId(), \
-        time(NULL), liux::GetThreadName())) -> printf(fmt, __VA_AGRS__);
+        liux::LogEventWrap(logger, liux::LogEvent::ptr(new liux::LogEvent( \
+        logger -> getName(), level, __FILE__, __LINE__, liux::GetElapsedMS(), \
+        liux::GetThreadId(), liux::GetFiberId(), time(NULL), \
+        liux::GetThreadName()))).getLogEvent() -> printf(fmt, __VA_AGRS__);
 
 #define LIUX_LOG_FMT_INFO(logger, fmt, ...) LIUX_LOG_LEVEL(logger, liux::LogLevel::INFO, fmt, __VA_ARGS__)
 #define LIUX_LOG_FMT_DEBUG(logger, fmt, ...) LIUX_LOG_LEVEL(logger, liux::LogLevel::DEBUG, __VA_ARGS__)
@@ -96,7 +100,7 @@ public:
              m_threadName(threadName) {}
     
     const LogLevel::Level getLevel() const {return m_level;}
-    const std::string& getContent() const {return m_ss.str();}
+    const std::string getContent() const {return m_ss.str();}
     std::stringstream& getSS() {return m_ss;}
     const char* getFile() const {return m_file;}
     uint32_t getLine() const {return m_line;}
@@ -265,12 +269,12 @@ private:
 
 
 // 日志事件包装器，包含日志器和事件，方便宏定义
-class LogEventWarp {
+class LogEventWrap {
 public:
-    using ptr = std::shared_ptr<LogEventWarp>;
-    LogEventWarp(Logger::ptr logger, LogEvent::ptr event);
+    using ptr = std::shared_ptr<LogEventWrap>;
+    LogEventWrap(Logger::ptr logger, LogEvent::ptr event);
     // 析构实现为：包装器析构的时候写日志
-    ~LogEventWarp();
+    ~LogEventWrap();
     LogEvent::ptr getLogEvent() const {return m_event;}
 
 private:

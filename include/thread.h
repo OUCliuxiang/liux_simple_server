@@ -4,7 +4,7 @@
 #define __THREAD_H__
 
 #include "mutex.h"
-#include <sys/types>    // pid_t 等类型
+#include <sys/types.h>    // pid_t 等类型
 #include <functional>   // std::function 封装器
 #include <string>
 
@@ -32,13 +32,13 @@ public:
     static void SetName(const std::string& name);
 
 private:
-    // 线程执行函数
+    // 线程执行函数，为什么要静态？
     static void* run(void* arg);
 
 private:
     pid_t m_id = -1;            // pid
     pthread_t m_thread = 0;     // 线程结构 from <pthread.h>
-    // 封装空参空返回的 线程执行 函数
+    // 封装空参空返回的 线程执行 函数，需要参数则 bind (位于 functional) 绑定
     std::function<void()> m_cb;
     std::string m_name;         // 线程名
     Semaphore m_semaphore;      // 信号量

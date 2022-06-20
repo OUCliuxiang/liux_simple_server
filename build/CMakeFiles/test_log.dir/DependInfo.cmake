@@ -15,7 +15,11 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/root/worksapce/sylarServer/build/CMakeFiles/liux.dir/DependInfo.cmake"
+  "/root/worksapce/sylarServer/build/CMakeFiles/liux_log.dir/DependInfo.cmake"
+  "/root/worksapce/sylarServer/build/CMakeFiles/liux_config.dir/DependInfo.cmake"
+  "/root/worksapce/sylarServer/build/CMakeFiles/liux_util.dir/DependInfo.cmake"
+  "/root/worksapce/sylarServer/build/CMakeFiles/liux_mutex.dir/DependInfo.cmake"
+  "/root/worksapce/sylarServer/build/CMakeFiles/liux_thread.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

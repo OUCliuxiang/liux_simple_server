@@ -14,11 +14,12 @@ pid_t GetThreadId() {
     return syscall(SYS_gettid);    
 }
 
-// 需要协程库，暂不实现
-/**
+// 需要协程库，暂不实现，随便返回一个值
+
 uint64_t GetFiberId(){   
+    return 123ul;
 }
-*/
+
 
 /*
 struct timespec {
