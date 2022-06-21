@@ -158,6 +158,40 @@ public:
     }
 };
 
+// 哈希集合
+template<class T>
+class LexicalCast<std::string, std::unordered_set<T> > {
+public:
+    std::unordered_set<T> operator()(const string& val) {
+        YAML::Node node = YAML::Load(val);
+        stringstream ss;
+        typename std::unordered_set<T> st;
+        for (size_t i = 0; i < node.size(); i ++) {
+            ss.str("");
+            ss << node[i];
+            // set 是无序容器，使用 insert 插入元素到集合中
+            st.insert(LexicalCast<std::string, T>()(ss.str()));
+        }
+        return st;
+    }
+};
+
+template<class T> 
+class LexicalCast<std::unordered_set<T>, std::string> {
+public:
+    std::string operator()(const std::unordered_set<T>& val) {
+        YAML::Node node(YAML::NodeType::Sequence);
+        for (auto &v: val) {
+            node.push_back(YAML::Load(LexicalCast<T, std::string>()(v)));
+        }
+        stringstream ss;
+        ss << node;
+        return ss.str();
+    }
+};
+
+// map 和 哈希 map ，YAML::Node 的 key 需要单独存储，有点不同。
+
 
 
 
