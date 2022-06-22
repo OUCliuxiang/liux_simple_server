@@ -114,17 +114,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named liux_config
+# Target rules for targets named liux_util
 
 # Build rule for target.
-liux_config: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 liux_config
-.PHONY : liux_config
+liux_util: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 liux_util
+.PHONY : liux_util
 
 # fast build rule for target.
-liux_config/fast:
-	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/build
-.PHONY : liux_config/fast
+liux_util/fast:
+	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/build
+.PHONY : liux_util/fast
 
 #=============================================================================
 # Target rules for targets named test_thread
@@ -166,19 +166,6 @@ liux_thread/fast:
 .PHONY : liux_thread/fast
 
 #=============================================================================
-# Target rules for targets named liux_util
-
-# Build rule for target.
-liux_util: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 liux_util
-.PHONY : liux_util
-
-# fast build rule for target.
-liux_util/fast:
-	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/build
-.PHONY : liux_util/fast
-
-#=============================================================================
 # Target rules for targets named liux_mutex
 
 # Build rule for target.
@@ -203,6 +190,19 @@ test_log: cmake_check_build_system
 test_log/fast:
 	$(MAKE) -f CMakeFiles/test_log.dir/build.make CMakeFiles/test_log.dir/build
 .PHONY : test_log/fast
+
+#=============================================================================
+# Target rules for targets named liux_config
+
+# Build rule for target.
+liux_config: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 liux_config
+.PHONY : liux_config
+
+# fast build rule for target.
+liux_config/fast:
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/build
+.PHONY : liux_config/fast
 
 src/config.o: src/config.cpp.o
 
@@ -238,6 +238,7 @@ src/log.o: src/log.cpp.o
 # target to build an object file
 src/log.cpp.o:
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.o
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.o
 .PHONY : src/log.cpp.o
 
 src/log.i: src/log.cpp.i
@@ -247,6 +248,7 @@ src/log.i: src/log.cpp.i
 # target to preprocess a source file
 src/log.cpp.i:
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.i
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.i
 .PHONY : src/log.cpp.i
 
 src/log.s: src/log.cpp.s
@@ -256,6 +258,7 @@ src/log.s: src/log.cpp.s
 # target to generate assembly for a file
 src/log.cpp.s:
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.s
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.s
 .PHONY : src/log.cpp.s
 
 src/mutex.o: src/mutex.cpp.o
@@ -266,6 +269,7 @@ src/mutex.o: src/mutex.cpp.o
 src/mutex.cpp.o:
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/mutex.cpp.o
 	$(MAKE) -f CMakeFiles/liux_mutex.dir/build.make CMakeFiles/liux_mutex.dir/src/mutex.cpp.o
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/mutex.cpp.o
 .PHONY : src/mutex.cpp.o
 
 src/mutex.i: src/mutex.cpp.i
@@ -276,6 +280,7 @@ src/mutex.i: src/mutex.cpp.i
 src/mutex.cpp.i:
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/mutex.cpp.i
 	$(MAKE) -f CMakeFiles/liux_mutex.dir/build.make CMakeFiles/liux_mutex.dir/src/mutex.cpp.i
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/mutex.cpp.i
 .PHONY : src/mutex.cpp.i
 
 src/mutex.s: src/mutex.cpp.s
@@ -286,6 +291,7 @@ src/mutex.s: src/mutex.cpp.s
 src/mutex.cpp.s:
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/mutex.cpp.s
 	$(MAKE) -f CMakeFiles/liux_mutex.dir/build.make CMakeFiles/liux_mutex.dir/src/mutex.cpp.s
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/mutex.cpp.s
 .PHONY : src/mutex.cpp.s
 
 src/thread.o: src/thread.cpp.o
@@ -322,6 +328,7 @@ src/util.o: src/util.cpp.o
 # target to build an object file
 src/util.cpp.o:
 	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/src/util.cpp.o
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/util.cpp.o
 .PHONY : src/util.cpp.o
 
 src/util.i: src/util.cpp.i
@@ -331,6 +338,7 @@ src/util.i: src/util.cpp.i
 # target to preprocess a source file
 src/util.cpp.i:
 	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/src/util.cpp.i
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/util.cpp.i
 .PHONY : src/util.cpp.i
 
 src/util.s: src/util.cpp.s
@@ -340,6 +348,7 @@ src/util.s: src/util.cpp.s
 # target to generate assembly for a file
 src/util.cpp.s:
 	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/src/util.cpp.s
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/util.cpp.s
 .PHONY : src/util.cpp.s
 
 tests/test_log.o: tests/test_log.cpp.o
@@ -403,14 +412,14 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... liux_config"
+	@echo "... liux_util"
 	@echo "... test_thread"
 	@echo "... liux_log"
 	@echo "... liux_thread"
-	@echo "... liux_util"
 	@echo "... edit_cache"
 	@echo "... liux_mutex"
 	@echo "... test_log"
+	@echo "... liux_config"
 	@echo "... src/config.o"
 	@echo "... src/config.i"
 	@echo "... src/config.s"

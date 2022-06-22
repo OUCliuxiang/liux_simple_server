@@ -1,1 +1,1 @@
-/usr/bin/c++ -fPIC  -rdynamic -fPIC -g -std=c++11 -Wall -Wno-deprecated -Werror -Wno-unused-function  -shared -Wl,-soname,libliux_mutex.so -o ../lib/libliux_mutex.so CMakeFiles/liux_mutex.dir/src/mutex.cpp.o 
+/usr/bin/c++ -fPIC -Wno-deprecated -Wno-unused-function  -shared -Wl,-soname,libliux_mutex.so -o ../lib/libliux_mutex.so CMakeFiles/liux_mutex.dir/src/mutex.cpp.o 

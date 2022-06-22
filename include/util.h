@@ -7,7 +7,7 @@
 #include <sys/types.h> 
 #include <stdint.h> // typedef 重定义的整型类型，uint8_t, INT_MAX 等等
 #include <sys/time.h>
-// #include <cxxabi.h>
+#include <cxxabi.h> // abi::__cxa_demangle()   
 #include <string>
 #include <vector>
 #include <iostream>
@@ -115,6 +115,15 @@ public:
     static double Atof(const char* str);
 
 }; // end TypeUtil
+
+template<class T> 
+const char* TypeToName() {
+    // abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr) 
+    // from <cxxabi> ，返回类型 T 的完成名称。 
+    static const char* s_name = abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr);
+    return s_name;
+};
+
 
 } // end liux namespace
 
