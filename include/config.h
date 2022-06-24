@@ -43,7 +43,7 @@ public:
     // 纯虚函数，该类是抽象类，不可实例化。
     virtual std::string toString() = 0;
     // 从字符串初始化配置，纯虚，子类按照自己需求重写实现。     
-    virtual bool formString(const std::string& val) = 0;
+    virtual bool fromString(const std::string& val) = 0;
     // 返回配置参数的类型名   
     virtual std::string& getTypeName() const = 0; 
 
@@ -67,7 +67,7 @@ public:
 template<class T> 
 class LexicalCast<std::string, std::vector<T> > {
 public:
-    std::vector<T> operator()(const string& val) {
+    std::vector<T> operator()(const std::string& val) {
         YAML::Node node = YAML::Load(val);
         std::stringstream ss; // 字符串流接收数据     
         // vector 容器元素类型在编译时不可知，要等到程序运行传入参数才可知道，所以用 typename 
@@ -108,7 +108,7 @@ class LexicalCast<std::string, std::list<T> > {
 public:
     std::list<T> operator()(const std::string& val) {
         typename std::list<T> lst;
-        stringstream ss;
+        std::stringstream ss;
         YAML::Node node = YAML::Load(val);
         for (size_t i = 0; i < node.size(); i ++) {
             ss.str("");
@@ -127,7 +127,7 @@ public:
         for (auto &v: val) {
             node.push_back(YAML::Load(LexicalCast<T, std::string>()(v)));
         }
-        stringstream ss;
+        std::stringstream ss;
         ss << node;
         return ss.str();
     }
@@ -137,9 +137,9 @@ public:
 template<class T>
 class LexicalCast<std::string, std::set<T> > {
 public:
-    std::set<T> operator()(const string& val) {
+    std::set<T> operator()(const std::string& val) {
         YAML::Node node = YAML::Load(val);
-        stringstream ss;
+        std::stringstream ss;
         typename std::set<T> st;
         for (size_t i = 0; i < node.size(); i ++) {
             ss.str("");
@@ -155,10 +155,11 @@ template<class T>
 class LexicalCast<std::set<T>, std::string> {
 public:
     std::string operator()(const std::set<T>& val) {
+        YAML::Node node(YAML::NodeType::Sequence);
         for (auto &v: val) {
             node.push_back(YAML::Load(LexicalCast<T, std::string>()(v)));
         }
-        stringstream ss;
+        std::stringstream ss;
         ss << node;
         return ss.str();
     }
@@ -168,9 +169,9 @@ public:
 template<class T>
 class LexicalCast<std::string, std::unordered_set<T> > {
 public:
-    std::unordered_set<T> operator()(const string& val) {
+    std::unordered_set<T> operator()(const std::string& val) {
         YAML::Node node = YAML::Load(val);
-        stringstream ss;
+        std::stringstream ss;
         typename std::unordered_set<T> st;
         for (size_t i = 0; i < node.size(); i ++) {
             ss.str("");
@@ -190,7 +191,7 @@ public:
         for (auto &v: val) {
             node.push_back(YAML::Load(LexicalCast<T, std::string>()(v)));
         }
-        stringstream ss;
+        std::stringstream ss;
         ss << node;
         return ss.str();
     }
@@ -203,28 +204,28 @@ public:
     std::map<std::string, T> operator()(const std::string& val) {
         YAML::Node node = YAML::Load(val);
         typename std::map<std::string, T> mm;
-        stringstream ss;
-        for (size_t i = 0; i < node.size(); i ++) {
+        std::stringstream ss;
+        for (auto it = node.begin(); it != node.end(); it ++) {
             ss.str("");
             // 此处的理解是无法保证 node 中的元素类型是 string，使用字符串流进行格式化转换。
-            ss << node[i].second;
+            ss << it -> second;
             // YAML::Node::Scalar() 元素标量化。
             // map 是无序容器，使用 insert 插入。
-            mm[node[i].first.Scalar()] = LexicalCast<std::string, T>()(ss.str());
+            mm[it -> first.Scalar()] = LexicalCast<std::string, T>()(ss.str());
         }
         return mm;
     }
 };
 
 template<class T>
-class LexicalCast<std::map<string, T>, std::string> {
+class LexicalCast<std::map<std::string, T>, std::string> {
 public:
     std::string operator()(const std::map<std::string, T>& val) {
         YAML::Node node(YAML::NodeType::Sequence);
         for (auto& v: val) {
             node[v.first] = YAML::Load(LexicalCast<T, std::string>()(v.second));
         }
-        stringstream ss;
+        std::stringstream ss;
         ss << node;
         return ss.str();
     }
@@ -236,28 +237,28 @@ public:
     std::unordered_map<std::string, T> operator()(const std::string& val) {
         YAML::Node node = YAML::Load(val);
         typename std::unordered_map<std::string, T> mm;
-        stringstream ss;
-        for (size_t i = 0; i < node.size(); i ++) {
+        std::stringstream ss;
+        for (auto it = node.begin(); it != node.end(); it ++) {
             ss.str("");
             // 此处的理解是无法保证 node 中的元素类型是 string，使用字符串流进行格式化转换。
-            ss << node[i].second;
+            ss << it -> second;
             // YAML::Node::Scalar() 元素标量化。
             // map 是无序容器，使用 insert 插入。
-            mm[node[i].first.Scalar()] = LexicalCast<std::string, T>()(ss.str());
+            mm[it -> first.Scalar()] = LexicalCast<std::string, T>()(ss.str());
         }
         return mm;
     }
 };
 
 template<class T>
-class LexicalCast<std::unordered_map<string, T>, std::string> {
+class LexicalCast<std::unordered_map<std::string, T>, std::string> {
 public:
     std::string operator()(const std::unordered_map<std::string, T>& val) {
         YAML::Node node(YAML::NodeType::Sequence);
         for (auto& v: val) {
             node[v.first] = YAML::Load(LexicalCast<T, std::string>()(v.second));
         }
-        stringstream ss;
+        std::stringstream ss;
         ss << node;
         return ss.str();
     }
