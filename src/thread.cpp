@@ -6,8 +6,9 @@
 #include <exception> // throw 等异常相关
 
 namespace liux {
-// 如果是静态的，那我一个类只能维护一个线程，这合理吗？
-// 如果是单例，也没有进行单例封装啊，而且线程构造函数为什么要单例？
+// 全局静态线程局部变量
+// 变量属于 liux 这个命名空间而不是任何一个类
+// 变量每个线程独立维护一个，不与其他线程冲突      
 static thread_local Thread* t_thread = nullptr;
 static thread_local std::string t_thread_name = "UNKNOWN";
 

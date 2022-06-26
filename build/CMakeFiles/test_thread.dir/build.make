@@ -98,6 +98,7 @@ test_thread_EXTERNAL_OBJECTS =
 ../bin/test_thread: ../lib/libliux_util.so
 ../bin/test_thread: ../lib/libliux_mutex.so
 ../bin/test_thread: ../lib/libliux_thread.so
+../bin/test_thread: ../lib/libliux_fiber.so
 ../bin/test_thread: CMakeFiles/test_thread.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/worksapce/sylarServer/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../bin/test_thread"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_thread.dir/link.txt --verbose=$(VERBOSE)

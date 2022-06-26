@@ -43,6 +43,7 @@ add_library(liux_util SHARED src/util.cpp)
 add_library(liux_mutex SHARED src/mutex.cpp)
 add_library(liux_config SHARED src/config.cpp src/log.cpp src/mutex.cpp src/util.cpp )
 add_library(liux_thread SHARED src/thread.cpp src/mutex.cpp)
+add_library(liux_fiber SHARED src/fiber.cpp src/thread.cpp src/config.cpp src/log.cpp src/util.cpp )
 
 set(LIBS 
     liux_log
@@ -50,6 +51,7 @@ set(LIBS
     liux_util
     liux_mutex
     liux_thread
+    liux_fiber
     pthread
     yaml-cpp)
 

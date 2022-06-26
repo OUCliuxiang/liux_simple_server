@@ -48,6 +48,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/liux_log.dir/DependInfo.cmake"
   "CMakeFiles/liux_thread.dir/DependInfo.cmake"
   "CMakeFiles/liux_mutex.dir/DependInfo.cmake"
-  "CMakeFiles/test_log.dir/DependInfo.cmake"
   "CMakeFiles/liux_config.dir/DependInfo.cmake"
+  "CMakeFiles/test_log.dir/DependInfo.cmake"
+  "CMakeFiles/liux_fiber.dir/DependInfo.cmake"
   )

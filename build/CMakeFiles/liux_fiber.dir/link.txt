@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -Wno-deprecated -Wno-unused-function  -shared -Wl,-soname,libliux_fiber.so -o ../lib/libliux_fiber.so CMakeFiles/liux_fiber.dir/src/fiber.cpp.o CMakeFiles/liux_fiber.dir/src/thread.cpp.o CMakeFiles/liux_fiber.dir/src/config.cpp.o CMakeFiles/liux_fiber.dir/src/log.cpp.o CMakeFiles/liux_fiber.dir/src/util.cpp.o 

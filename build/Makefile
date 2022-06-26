@@ -179,6 +179,19 @@ liux_mutex/fast:
 .PHONY : liux_mutex/fast
 
 #=============================================================================
+# Target rules for targets named liux_config
+
+# Build rule for target.
+liux_config: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 liux_config
+.PHONY : liux_config
+
+# fast build rule for target.
+liux_config/fast:
+	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/build
+.PHONY : liux_config/fast
+
+#=============================================================================
 # Target rules for targets named test_log
 
 # Build rule for target.
@@ -192,17 +205,17 @@ test_log/fast:
 .PHONY : test_log/fast
 
 #=============================================================================
-# Target rules for targets named liux_config
+# Target rules for targets named liux_fiber
 
 # Build rule for target.
-liux_config: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 liux_config
-.PHONY : liux_config
+liux_fiber: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 liux_fiber
+.PHONY : liux_fiber
 
 # fast build rule for target.
-liux_config/fast:
-	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/build
-.PHONY : liux_config/fast
+liux_fiber/fast:
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/build
+.PHONY : liux_fiber/fast
 
 src/config.o: src/config.cpp.o
 
@@ -211,6 +224,7 @@ src/config.o: src/config.cpp.o
 # target to build an object file
 src/config.cpp.o:
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/config.cpp.o
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/config.cpp.o
 .PHONY : src/config.cpp.o
 
 src/config.i: src/config.cpp.i
@@ -220,6 +234,7 @@ src/config.i: src/config.cpp.i
 # target to preprocess a source file
 src/config.cpp.i:
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/config.cpp.i
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/config.cpp.i
 .PHONY : src/config.cpp.i
 
 src/config.s: src/config.cpp.s
@@ -229,7 +244,35 @@ src/config.s: src/config.cpp.s
 # target to generate assembly for a file
 src/config.cpp.s:
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/config.cpp.s
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/config.cpp.s
 .PHONY : src/config.cpp.s
+
+src/fiber.o: src/fiber.cpp.o
+
+.PHONY : src/fiber.o
+
+# target to build an object file
+src/fiber.cpp.o:
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/fiber.cpp.o
+.PHONY : src/fiber.cpp.o
+
+src/fiber.i: src/fiber.cpp.i
+
+.PHONY : src/fiber.i
+
+# target to preprocess a source file
+src/fiber.cpp.i:
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/fiber.cpp.i
+.PHONY : src/fiber.cpp.i
+
+src/fiber.s: src/fiber.cpp.s
+
+.PHONY : src/fiber.s
+
+# target to generate assembly for a file
+src/fiber.cpp.s:
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/fiber.cpp.s
+.PHONY : src/fiber.cpp.s
 
 src/log.o: src/log.cpp.o
 
@@ -239,6 +282,7 @@ src/log.o: src/log.cpp.o
 src/log.cpp.o:
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.o
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.o
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/log.cpp.o
 .PHONY : src/log.cpp.o
 
 src/log.i: src/log.cpp.i
@@ -249,6 +293,7 @@ src/log.i: src/log.cpp.i
 src/log.cpp.i:
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.i
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.i
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/log.cpp.i
 .PHONY : src/log.cpp.i
 
 src/log.s: src/log.cpp.s
@@ -259,6 +304,7 @@ src/log.s: src/log.cpp.s
 src/log.cpp.s:
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.s
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.s
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/log.cpp.s
 .PHONY : src/log.cpp.s
 
 src/mutex.o: src/mutex.cpp.o
@@ -301,6 +347,7 @@ src/thread.o: src/thread.cpp.o
 # target to build an object file
 src/thread.cpp.o:
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/thread.cpp.o
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/thread.cpp.o
 .PHONY : src/thread.cpp.o
 
 src/thread.i: src/thread.cpp.i
@@ -310,6 +357,7 @@ src/thread.i: src/thread.cpp.i
 # target to preprocess a source file
 src/thread.cpp.i:
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/thread.cpp.i
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/thread.cpp.i
 .PHONY : src/thread.cpp.i
 
 src/thread.s: src/thread.cpp.s
@@ -319,6 +367,7 @@ src/thread.s: src/thread.cpp.s
 # target to generate assembly for a file
 src/thread.cpp.s:
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/thread.cpp.s
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/thread.cpp.s
 .PHONY : src/thread.cpp.s
 
 src/util.o: src/util.cpp.o
@@ -329,6 +378,7 @@ src/util.o: src/util.cpp.o
 src/util.cpp.o:
 	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/src/util.cpp.o
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/util.cpp.o
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/util.cpp.o
 .PHONY : src/util.cpp.o
 
 src/util.i: src/util.cpp.i
@@ -339,6 +389,7 @@ src/util.i: src/util.cpp.i
 src/util.cpp.i:
 	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/src/util.cpp.i
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/util.cpp.i
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/util.cpp.i
 .PHONY : src/util.cpp.i
 
 src/util.s: src/util.cpp.s
@@ -349,6 +400,7 @@ src/util.s: src/util.cpp.s
 src/util.cpp.s:
 	$(MAKE) -f CMakeFiles/liux_util.dir/build.make CMakeFiles/liux_util.dir/src/util.cpp.s
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/util.cpp.s
+	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/util.cpp.s
 .PHONY : src/util.cpp.s
 
 tests/test_log.o: tests/test_log.cpp.o
@@ -418,11 +470,15 @@ help:
 	@echo "... liux_thread"
 	@echo "... edit_cache"
 	@echo "... liux_mutex"
-	@echo "... test_log"
 	@echo "... liux_config"
+	@echo "... test_log"
+	@echo "... liux_fiber"
 	@echo "... src/config.o"
 	@echo "... src/config.i"
 	@echo "... src/config.s"
+	@echo "... src/fiber.o"
+	@echo "... src/fiber.i"
+	@echo "... src/fiber.s"
 	@echo "... src/log.o"
 	@echo "... src/log.i"
 	@echo "... src/log.s"

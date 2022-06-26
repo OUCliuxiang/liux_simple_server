@@ -197,6 +197,9 @@ liux_SOURCE_DIR:STATIC=/root/worksapce/sylarServer
 liux_config_LIB_DEPENDS:STATIC=
 
 //Dependencies for target
+liux_fiber_LIB_DEPENDS:STATIC=
+
+//Dependencies for target
 liux_log_LIB_DEPENDS:STATIC=
 
 //Dependencies for target

@@ -20,6 +20,7 @@ set(CMAKE_TARGET_LINKED_INFO_FILES
   "/root/worksapce/sylarServer/build/CMakeFiles/liux_util.dir/DependInfo.cmake"
   "/root/worksapce/sylarServer/build/CMakeFiles/liux_mutex.dir/DependInfo.cmake"
   "/root/worksapce/sylarServer/build/CMakeFiles/liux_thread.dir/DependInfo.cmake"
+  "/root/worksapce/sylarServer/build/CMakeFiles/liux_fiber.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

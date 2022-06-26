@@ -5,5 +5,6 @@
 /root/worksapce/sylarServer/build/CMakeFiles/liux_thread.dir
 /root/worksapce/sylarServer/build/CMakeFiles/edit_cache.dir
 /root/worksapce/sylarServer/build/CMakeFiles/liux_mutex.dir
-/root/worksapce/sylarServer/build/CMakeFiles/test_log.dir
 /root/worksapce/sylarServer/build/CMakeFiles/liux_config.dir
+/root/worksapce/sylarServer/build/CMakeFiles/test_log.dir
+/root/worksapce/sylarServer/build/CMakeFiles/liux_fiber.dir
