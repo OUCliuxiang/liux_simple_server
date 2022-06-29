@@ -4,7 +4,7 @@
 #define __FIBER_H__
 
 #include <memory>
-#include <ucontext> // 保存协程上下文（状态）
+#include <ucontext.h> // 保存协程上下文（状态）
 #include <functional>
 #include "thread.h" // 线程调用协程，协程可以理解为可中断的函数
 
@@ -14,7 +14,7 @@ namespace liux {
 // 拥有成员函数 std::shared_from_this() 返回一个指向自身的智能指针，
 // 用于类内成员需要传递当前类对象自身指针到其他函数的情况。使用裸指针 this 
 // 不会加入到 shared_ptr 计数器，会造成计数混乱产生析构相关问题。
-class Fiber: public std::enable_shared_ptr_from_this<Fiber> {
+class Fiber: public std::enable_shared_from_this<Fiber> {
 public:
     using ptr = std::shared_ptr<Fiber>;
     // 自定义协程状态：就绪态，运行态，结束态
@@ -66,10 +66,11 @@ public:
     // 获取总的协程数
     static uint64_t totalFibers();
 
-    // 携程入口函数？怎么又一个？先 mark 住，根据 fiber.cpp 再行理解吧。
+    // 协程入口函数？怎么又一个？先 mark 住，根据 fiber.cpp 再行理解吧。
     static void mainFunc();
 
     // 获取当前正在执行的协程的 id，有点理解，又有些费解，根据 fiber.cpp 再看吧
+    // 根据 m_ctx 的作用，似乎这个是真正的任务执行函数，但是，那 cb 用来干嘛？
     static uint64_t getFiberId();
 
 private:
@@ -78,8 +79,18 @@ private:
     State m_state = READY;
     ucontext_t m_ctx;   // 协程上下文
     void *m_stack = nullptr;    // 协程栈入口
-    std::function<void()> cb;   // 协程函数入口
+    std::function<void()> m_cb;   // 协程函数入口
     bool m_runInScheduler;      // 是否参与协程调度器调度
+
+// typedef struct ucontext
+// {
+//     unsigned long int uc_flags;
+//     struct ucontext *uc_link;//当前上下文结束时要恢复到的上下文，其中上下文由 makecontext() 创建
+//     __sigset_t uc_sigmask;// 信号屏蔽字掩码
+//     stack_t uc_stack;// 上下文所使用的栈
+//     mcontext_t uc_mcontext;// 保存的上下文的寄存器信息
+//     long int uc_filler[5];
+// } ucontext_t;
 
 };
 

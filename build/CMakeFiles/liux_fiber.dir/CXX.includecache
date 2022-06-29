@@ -44,6 +44,16 @@ mutex.h
 util.h
 ../include/util.h
 
+../include/fiber.h
+memory
+-
+ucontext.h
+-
+functional
+-
+thread.h
+../include/thread.h
+
 ../include/log.h
 util.h
 ../include/util.h
@@ -90,6 +100,16 @@ nocopyable.h
 memory
 -
 
+../include/thread.h
+mutex.h
+../include/mutex.h
+sys/types.h
+-
+functional
+-
+string
+-
+
 ../include/util.h
 sys/types.h
 -
@@ -116,6 +136,16 @@ sys/stat.h
 unistd.h
 -
 
+/root/worksapce/sylarServer/src/fiber.cpp
+atomic
+-
+fiber.h
+/root/worksapce/sylarServer/src/fiber.h
+log.h
+/root/worksapce/sylarServer/src/log.h
+config.h
+/root/worksapce/sylarServer/src/config.h
+
 /root/worksapce/sylarServer/src/log.cpp
 utility
 -
@@ -126,10 +156,14 @@ iostream
 log.h
 /root/worksapce/sylarServer/src/log.h
 
-/root/worksapce/sylarServer/src/mutex.cpp
-mutex.h
-/root/worksapce/sylarServer/src/mutex.h
-stdexcept
+/root/worksapce/sylarServer/src/thread.cpp
+thread.h
+/root/worksapce/sylarServer/src/thread.h
+log.h
+/root/worksapce/sylarServer/src/log.h
+util.h
+/root/worksapce/sylarServer/src/util.h
+exception
 -
 
 /root/worksapce/sylarServer/src/util.cpp

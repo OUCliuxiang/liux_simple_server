@@ -5,7 +5,7 @@ project(liux) # 项目名称为 liux，存储在变量 PROJECT_NAME 中
 
 set(CMAKE_VERBOSE_MAKEFILE ON) 
 # 编译参数 -g 允许 gdb 调试模式
-set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -g -std=c++11 -Wall -Werror")
+set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} -O0 -std=c++11 -Wall -Werror")
 # -rdynamic: 将所有符号都加入到符号表中，便于使用dlopen或者backtrace追踪到符号
 # -fPIC: 生成位置无关的代码，便于动态链接
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic -fPIC")
@@ -13,7 +13,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic -fPIC")
 # -Wno-builtin-macro-redefined: 不要警告内置宏重定义，用于重定义内置的__FILE__宏
 # -Wno-deprecated: 不要警告过时的特性
 # -Wno-deprecated-declarations: 不要警告使用带deprecated属性的变量，类型，函数
-set(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-unused-function") 
+# -fpermissive: 不加这个，boost 会报 assert 相关错误，依照编译器建议，添加该项
+set(CMAKE_CXX_FLAGS "-Wno-deprecated -Wno-unused-function -fpermissive") 
 
 # 本项目头文件目录
 include_directories(${PROJECT_SOURCE_DIR}/include)

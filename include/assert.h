@@ -15,11 +15,11 @@
 #define __ASSERT_H__
 
 #include <string>
-#include <assert.h>
+#include <cassert>
 #include "log.h"
 #include "util.h"
 
-#ifdef defined __GUNC__ || defined __llvm__ // 如果使用 gcc/g++ 或者 llvm
+#if defined __GUNC__ || defined __llvm__ // 如果使用 gcc/g++ 或者 llvm
 // 告诉编译器 条件成立的
 #define LIUX_LIKELY(x) __builtin_expect(!!(x), 1);
 #define LIUX_UNLIKELY(x) __builtin_expect(!!(x), 0);

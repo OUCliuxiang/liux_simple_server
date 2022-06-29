@@ -10,6 +10,7 @@
 #include <boost/lexical_cast.hpp> // 数值（类型）转换
 #include <yaml-cpp/yaml.h>
 #include <sstream> // stringstream 字符串流
+#include <functional>
 
 #include <vector>
 #include <list>
@@ -45,7 +46,7 @@ public:
     // 从字符串初始化配置，纯虚，子类按照自己需求重写实现。     
     virtual bool fromString(const std::string& val) = 0;
     // 返回配置参数的类型名   
-    virtual std::string& getTypeName() const = 0; 
+    virtual std::string getTypeName() const = 0; 
 
 protected:
     std::string m_name;
