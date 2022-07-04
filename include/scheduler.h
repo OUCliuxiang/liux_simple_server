@@ -22,7 +22,7 @@ class Scheduler {
 public:
     using ptr = std::shared_ptr<Scheduler>;
     // threads 线程数
-    // use_caller 是否将当前线程也作为调度线程
+    // use_caller 是否将当前线程作为调度线程
     // name 名字
     Scheduler(size_t threads=1, bool use_caller=true, const std::string& name="Scheduler");
     // 虚析构，用于基类指针指向派生类对象，析构的时候释放子类资源
@@ -113,7 +113,7 @@ private:
 private:
     std::string m_name;     // 协程调度器名称
     Mutex m_mutex;          // 互斥锁
-    std::vector<Thread::ptr> m_pthreads;// 线程池
+    std::vector<Thread::ptr> m_threads;// 线程池
     std::list<ScheduleTask> m_tasks;    // 任务队列，任务可以是协程或者函数       
     std::vector<int> m_threadIds;       // 线程池中的线程 id 数组
     size_t m_threadCount = 0;   // 工作线程数量，不包括 use_caller 产生的主线程      

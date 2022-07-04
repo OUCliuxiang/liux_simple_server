@@ -114,6 +114,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named liux_scheduler
+
+# Build rule for target.
+liux_scheduler: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 liux_scheduler
+.PHONY : liux_scheduler
+
+# fast build rule for target.
+liux_scheduler/fast:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/build
+.PHONY : liux_scheduler/fast
+
+#=============================================================================
 # Target rules for targets named liux_util
 
 # Build rule for target.
@@ -253,6 +266,7 @@ src/fiber.o: src/fiber.cpp.o
 
 # target to build an object file
 src/fiber.cpp.o:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/fiber.cpp.o
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/fiber.cpp.o
 .PHONY : src/fiber.cpp.o
 
@@ -262,6 +276,7 @@ src/fiber.i: src/fiber.cpp.i
 
 # target to preprocess a source file
 src/fiber.cpp.i:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/fiber.cpp.i
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/fiber.cpp.i
 .PHONY : src/fiber.cpp.i
 
@@ -271,6 +286,7 @@ src/fiber.s: src/fiber.cpp.s
 
 # target to generate assembly for a file
 src/fiber.cpp.s:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/fiber.cpp.s
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/fiber.cpp.s
 .PHONY : src/fiber.cpp.s
 
@@ -280,6 +296,7 @@ src/log.o: src/log.cpp.o
 
 # target to build an object file
 src/log.cpp.o:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/log.cpp.o
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.o
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.o
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/log.cpp.o
@@ -291,6 +308,7 @@ src/log.i: src/log.cpp.i
 
 # target to preprocess a source file
 src/log.cpp.i:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/log.cpp.i
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.i
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.i
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/log.cpp.i
@@ -302,6 +320,7 @@ src/log.s: src/log.cpp.s
 
 # target to generate assembly for a file
 src/log.cpp.s:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/log.cpp.s
 	$(MAKE) -f CMakeFiles/liux_log.dir/build.make CMakeFiles/liux_log.dir/src/log.cpp.s
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/log.cpp.s
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/log.cpp.s
@@ -313,6 +332,7 @@ src/mutex.o: src/mutex.cpp.o
 
 # target to build an object file
 src/mutex.cpp.o:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/mutex.cpp.o
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/mutex.cpp.o
 	$(MAKE) -f CMakeFiles/liux_mutex.dir/build.make CMakeFiles/liux_mutex.dir/src/mutex.cpp.o
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/mutex.cpp.o
@@ -324,6 +344,7 @@ src/mutex.i: src/mutex.cpp.i
 
 # target to preprocess a source file
 src/mutex.cpp.i:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/mutex.cpp.i
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/mutex.cpp.i
 	$(MAKE) -f CMakeFiles/liux_mutex.dir/build.make CMakeFiles/liux_mutex.dir/src/mutex.cpp.i
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/mutex.cpp.i
@@ -335,6 +356,7 @@ src/mutex.s: src/mutex.cpp.s
 
 # target to generate assembly for a file
 src/mutex.cpp.s:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/mutex.cpp.s
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/mutex.cpp.s
 	$(MAKE) -f CMakeFiles/liux_mutex.dir/build.make CMakeFiles/liux_mutex.dir/src/mutex.cpp.s
 	$(MAKE) -f CMakeFiles/liux_config.dir/build.make CMakeFiles/liux_config.dir/src/mutex.cpp.s
@@ -346,6 +368,7 @@ src/thread.o: src/thread.cpp.o
 
 # target to build an object file
 src/thread.cpp.o:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/thread.cpp.o
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/thread.cpp.o
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/thread.cpp.o
 .PHONY : src/thread.cpp.o
@@ -356,6 +379,7 @@ src/thread.i: src/thread.cpp.i
 
 # target to preprocess a source file
 src/thread.cpp.i:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/thread.cpp.i
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/thread.cpp.i
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/thread.cpp.i
 .PHONY : src/thread.cpp.i
@@ -366,6 +390,7 @@ src/thread.s: src/thread.cpp.s
 
 # target to generate assembly for a file
 src/thread.cpp.s:
+	$(MAKE) -f CMakeFiles/liux_scheduler.dir/build.make CMakeFiles/liux_scheduler.dir/src/thread.cpp.s
 	$(MAKE) -f CMakeFiles/liux_thread.dir/build.make CMakeFiles/liux_thread.dir/src/thread.cpp.s
 	$(MAKE) -f CMakeFiles/liux_fiber.dir/build.make CMakeFiles/liux_fiber.dir/src/thread.cpp.s
 .PHONY : src/thread.cpp.s
@@ -464,6 +489,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
+	@echo "... liux_scheduler"
 	@echo "... liux_util"
 	@echo "... test_thread"
 	@echo "... liux_log"

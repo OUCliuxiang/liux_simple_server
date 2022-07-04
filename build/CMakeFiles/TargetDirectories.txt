@@ -1,4 +1,5 @@
 /root/worksapce/sylarServer/build/CMakeFiles/rebuild_cache.dir
+/root/worksapce/sylarServer/build/CMakeFiles/liux_scheduler.dir
 /root/worksapce/sylarServer/build/CMakeFiles/liux_util.dir
 /root/worksapce/sylarServer/build/CMakeFiles/test_thread.dir
 /root/worksapce/sylarServer/build/CMakeFiles/liux_log.dir

@@ -206,6 +206,9 @@ liux_log_LIB_DEPENDS:STATIC=
 liux_mutex_LIB_DEPENDS:STATIC=
 
 //Dependencies for target
+liux_scheduler_LIB_DEPENDS:STATIC=
+
+//Dependencies for target
 liux_thread_LIB_DEPENDS:STATIC=
 
 //Dependencies for target
