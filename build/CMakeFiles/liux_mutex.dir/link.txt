@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -Wno-deprecated -Wno-unused-function -fpermissive  -shared -Wl,-soname,libliux_mutex.so -o ../lib/libliux_mutex.so CMakeFiles/liux_mutex.dir/src/mutex.cpp.o 
