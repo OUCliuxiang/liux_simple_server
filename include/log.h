@@ -28,11 +28,11 @@ namespace log {
 
     using namespace std;
 
-    string date_now(); 
-    string time_now();
-    string gmtime_now();
-    string gmtime(time_t t);
-    time_t gmtime2ctime(const string& gmt);
+    const char* date_now(); 
+    const char* time_now();
+    const char* gmtime_now(); 
+    const char* gmtime(time_t t); // UTC 格式时间，具体在 cpp 里有例子
+    time_t gmtime2ctime(const string& gmt); // 转为自1970经过的秒数
     void sleep(int ms);
     long long timestamp_now();
     
