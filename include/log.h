@@ -42,14 +42,17 @@ namespace log {
     bool mkdirs(const char* path);
     bool exists(const char* path);
 
-    FILE* fopen_mkdirs(const char* path, const char* mode);
-    string file_name(const string& path, bool include_suffix);
-    string directory(const string& path);
 
-    time_t last_modify(const string& file);
-    vector<uint8_t> load_file(const string& file);
+    FILE* fopen_mkdirs(const char* path, const char* mode);
+    const char* file_name(const char* path, bool include_suffix);
+    const char* directory(const char* path);
+
+
+    time_t last_modify(const char* file);
+    vector<uint8_t> load_file(const char* file);
     string load_text_file(const string& file);
     size_t file_size(const string& file);
+
 
     bool begin_with(const string& str, const string& with);
     bool end_with(const string& str, const string& with);
@@ -65,17 +68,21 @@ namespace log {
     );
     string align_blank(const string& input, int align_size, char blank = ' ');
 
+
     bool save_file(const string& file, const vector<uint8_t>& data, bool mk_dirs = true);
     bool save_file(const string& file, const string& data, bool mk_dirs = true);
     bool save_file(const string& file, const void* data, size_t len, bool mk_dirs = true);
+
 
     // 循环等待， 并捕获 ctrl+C 这类的终止信号，收到信号后结束循环并返回信号类型
     int while_loop();
 
     string format(const char* fmt, ...);
 
+
     const char* log_level(int level);
     void set_logger_save_directory(const string& directory);
+
 
     void set_log_level(int level); // 过滤，高于这个级别的日志才输出
     // 日志输出函数，在上面写成了宏以方便实用

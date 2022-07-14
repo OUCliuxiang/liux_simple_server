@@ -191,5 +191,80 @@ namespace log {
         return fopen(path, mode);
     }
 
-    
+    const char* file_name(const char* path, bool include_suffix) {
+        if (path == nullptr) return "";
+
+        string _path(path);
+        int p = _path.refind('/');
+        p += 1;
+        if (include_suffix) return _path.substr(p);
+        int u = _path.rfind('.');
+        if (u == -1) return _path.substr(p);
+        if (u <= p) u = _path.size() 
+        return path.substr(p, u-p);
+    }
+
+    const char* directory(const char* path) {
+        if (path == nullptr) return ".";
+        string _path(path);
+        int p = _path.rfind('/');
+        if (p == -1)    return ".";
+        return _path.substr(0, p+1);
+    }
+
+
+    time_t last_modify(const char* file) {
+        struct stat st;
+        stat(file, &st);
+        return st.st_mtim.tv_sec;
+    }
+
+    // 返回文件数组
+    std::vector<uint8_t> load_file(const char* file){
+
+        ifstream in(file, ios::in | ios::binary);
+        if (!in.is_open())
+            return {};
+
+        in.seekg(0, ios::end);
+        size_t length = in.tellg();
+
+        std::vector<uint8_t> data;
+        if (length > 0){
+            in.seekg(0, ios::beg);
+            data.resize(length);
+
+            in.read((char*)&data[0], length);
+        }
+        in.close();
+        return data;
+    }
+
+    // 返回文件文本
+    string load_text_file(const char* file) {
+        ifstream in(file, ios::in | ios::binary);
+        if (!in.is_open())
+            return {};
+
+        in.seekg(0, ios::end);
+        size_t length = in.tellg();
+
+        string data;
+        if (length > 0){
+            in.seekg(0, ios::beg);
+            data.resize(length);
+
+            in.read((char*)&data[0], length);
+        }
+        in.close();
+        return data;
+    }
+
+    size_t file_size(const char* file){
+        struct stat st;
+        stat(file.c_str(), &st);
+        return st.st_size;
+    }
+
+
 } // end namespace log
