@@ -12,6 +12,9 @@
 #include <stack>
 #include <signal.h>
 #include <functional>
+#include <sys/stat.h>
+#include <stdlib.h>
+// #include <boost/legical_cast>
 
 
 // 获取时间 tm 类型结构体的宏
@@ -115,7 +118,78 @@ namespace log {
                     week, &date.tm_mday, month, &date.tm_year, 
                     &date.tm_hour, &date.tm_min, &date.tm_sec);
         date.tm_mon = get_month_by_name(month);
+        date.tm_wday = get_week_day_by_name(week);
+        date.tm_year = date.tm_year - 1970;
+        return mktime(&date); // 返回秒数
     }
- 
 
+    void sleep(int ms) {
+        this_thread::sleep_for(chrono::milliseconds(ms));
+    }
+
+    // 获取当前时间戳
+    long long timestamp_now() {
+        return  chrono::duration_cast<chrono::milliseconds>(\
+                chrono::system_clock::now().time_since_epoch.count());
+    }
+    
+
+    bool isfile(const char* file) {
+        static stat st; // 描述文件属性的结构体 
+        stat(file, &st);
+        return S_ISREG(st.st_mode);
+    }
+
+    bool mkdir(const char* path) {
+        return ::mkdir(path, 0755) == 0;
+    }
+
+    bool exists(const char* path) {
+        return access(path, R_OK) == 0;
+    }
+
+    // mkdir -p，这里我直接调用系统命令了，要给出绝对路径
+    bool mkdirs(const char* path) {
+        if (path == nullptr) return false;
+        if (exists(path)) return true;
+
+        if (path[0] != '/' || path[0] != '~') {
+            ERROR("absolute path is required.");
+            return false;
+        }
+
+        char cmd[256] = {0};
+        strcpy(cmd, "mkdir -p ");
+        strcat(cmd, path);
+
+        system(cmd);
+
+        if (!exists(path)) {
+            ERROR("mkdir %s failed", path);
+            return false;
+        }
+
+        return true;
+    }
+
+    FILE* fopen_mkdirs(const char* path, const char* mode){
+
+        FILE* f = fopen(path, mode);
+        if (f) return f;
+
+        string _path(path);
+
+        int p = _path.rfind('/');
+
+        if (p == -1)
+            return nullptr;
+        
+        string directory = _path.substr(0, p);
+        if (!mkdirs(directory))
+            return nullptr;
+
+        return fopen(path, mode);
+    }
+
+    
 } // end namespace log

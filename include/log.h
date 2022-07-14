@@ -34,15 +34,15 @@ namespace log {
     const char* gmtime(time_t t); // UTC 格式时间，具体在 cpp 里有例子
     time_t gmtime2ctime(const string& gmt); // 转为自1970经过的秒数
     void sleep(int ms);
-    long long timestamp_now();
+    long long timestamp_now(); // 获取时间戳
     
     
-    bool isfile(const string& file);
-    bool mkdir(const string& path);
-    bool mkdirs(const string& path);
-    bool exists(const string& path);
+    bool isfile(const char* file);
+    bool mkdir(const char* path);
+    bool mkdirs(const char* path);
+    bool exists(const char* path);
 
-    FILE* fopen_mkdirs(const string& path, const string& mode);
+    FILE* fopen_mkdirs(const char* path, const char* mode);
     string file_name(const string& path, bool include_suffix);
     string directory(const string& path);
 
