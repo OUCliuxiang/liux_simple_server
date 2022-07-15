@@ -54,12 +54,13 @@ namespace log {
     size_t file_size(const string& file);
 
 
-    bool begin_with(const string& str, const string& with);
-    bool end_with(const string& str, const string& with);
+    bool begin_with(const char* str, const char* with);
+    bool end_with(const char* str, const char* with);
     vector<string> split_string(const string& str, const string& spstr);
     string replace_string(const string& str, const string& token, const string& value);
-    bool pattern_match(const string& str, const string& matcher, bool ignore_cast = true);
+    bool pattern_match(const char* str, const char* matcher, bool ignore_cast = true);
     
+
     vector<string> find_files(
         const stirng& directory,
         const string& filter = "*", 
@@ -82,8 +83,6 @@ namespace log {
 
     const char* log_level(int level);
     void set_logger_save_directory(const string& directory);
-
-
     void set_log_level(int level); // 过滤，高于这个级别的日志才输出
     // 日志输出函数，在上面写成了宏以方便实用
     void __log(const char* file, int line, int level, const char* fmt, ...);

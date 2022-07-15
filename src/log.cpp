@@ -28,18 +28,6 @@
 namespace log {
 
     using namespace std;
-
-    const char* level_string(int level) {
-        switch (level) {
-        case LFATAL:    return "FATAL";
-        case LERROR:    return "ERROR";
-        case LWARN:     return "WARN";
-        case LINFO:     return "INFO";
-        case LVERBOSE:  return "VERBOSE";
-        default:        return "UNKONWN";
-        }
-        return "UNKNOWN";
-    }
     
     const char* date_now() {
         // yyyy-mm-dd
@@ -265,6 +253,431 @@ namespace log {
         stat(file.c_str(), &st);
         return st.st_size;
     }
+
+
+    bool begin_with(const char* str, const char* with) {
+        if (sizeof(str) < sizeof(with) ) return false;
+        return strncmp(str, with, sizeof(with)) == 0;
+    }
+
+    bool end_with(const char* str, const char* with) {
+        if (sizeof(str) < sizeof(with) ) return false;
+        return strncmp(str+sizeof(str)-sizeof(with), with, sizeof(with)) == 0;
+    } 
+
+    vector<string> split_string(const string& str, const std::string& spstr){
+
+        vector<string> res;
+        if (str.empty()) return res;
+        if (spstr.empty()) return{ str };
+
+        auto p = str.find(spstr);
+        if (p == string::npos) return{ str };
+
+        res.reserve(5);
+        string::size_type prev = 0;
+        int lent = spstr.length();
+        const char* ptr = str.c_str();
+
+        while (p != string::npos){
+            int len = p - prev;
+            if (len > 0){
+                res.emplace_back(str.substr(prev, len));
+            }
+            prev = p + lent;
+            p = str.find(spstr, prev);
+        }
+
+        int len = str.length() - prev;
+        if (len > 0){
+            res.emplace_back(str.substr(prev, len));
+        }
+        return res;
+    }
+
+    string replace_string(const string& str, const string& token, const string& value){
+
+        string opstr;
+
+        if (value.length() > token.length()){
+            float numToken = str.size() / (float)token.size();
+            float newTokenLength = value.size() * numToken;
+            opstr.resize(newTokenLength);
+        }
+        else{
+            opstr.resize(str.size());
+        }
+
+        char* dest = &opstr[0];
+        const char* src = str.c_str();
+        string::size_type pos = 0;
+        string::size_type prev = 0;
+        size_t token_length = token.length();
+        size_t value_length = value.length();
+        const char* value_ptr = value.c_str();
+        bool keep = true;
+
+        do{
+            pos = str.find(token, pos);
+            if (pos == string::npos){
+                keep = false;
+                pos = str.length();
+            }
+
+            size_t copy_length = pos - prev;
+            memcpy(dest, src + prev, copy_length);
+            dest += copy_length;
+            
+            if (keep){
+                pos += token_length;
+                prev = pos;
+                memcpy(dest, value_ptr, value_length);
+                dest += value_length;
+            }
+        } while (keep);
+
+        size_t valid_size = dest - &opstr[0];
+        opstr.resize(valid_size);
+        return opstr;
+    }
+
+    bool pattern_match(const char* str, const char* matcher, bool igrnoe_case){
+        //   abcdefg.pnga          *.png      > false
+        //   abcdefg.png           *.png      > true
+        //   abcdefg.png          a?cdefg.png > true
+
+        if (!matcher || !*matcher || !str || !*str) return false;
+
+        char filter[500];
+        strcpy(filter, matcher);
+
+        vector<const char*> arr;
+        char* ptr_str = filter;
+        char* ptr_prev_str = ptr_str;
+        while (*ptr_str){
+            if (*ptr_str == ';'){
+                *ptr_str = 0;
+                arr.push_back(ptr_prev_str);
+                ptr_prev_str = ptr_str + 1;
+            }
+            ptr_str++;
+        }
+
+        if (*ptr_prev_str)
+            arr.push_back(ptr_prev_str);
+
+        for (int i = 0; i < arr.size(); ++i){
+            if (pattern_match_body(str, arr[i], igrnoe_case))
+                return true;
+        }
+        return false;
+    }
+
+
+     vector<string> find_files(const string& directory, const string& filter, bool findDirectory, bool includeSubDirectory)
+    {
+        string realpath = directory;
+        if (realpath.empty())
+            realpath = "./";
+
+        char backchar = realpath.back();
+        if (backchar != '\\' && backchar != '/')
+            realpath += "/";
+
+        struct dirent* fileinfo;
+        DIR* handle;
+        stack<string> ps;
+        vector<string> out;
+        ps.push(realpath);
+
+        while (!ps.empty())
+        {
+            string search_path = ps.top();
+            ps.pop();
+
+            handle = opendir(search_path.c_str());
+            if (handle != 0)
+            {
+                while (fileinfo = readdir(handle))
+                {
+                    struct stat file_stat;
+                    if (strcmp(fileinfo->d_name, ".") == 0 || strcmp(fileinfo->d_name, "..") == 0)
+                        continue;
+
+                    if (lstat((search_path + fileinfo->d_name).c_str(), &file_stat) < 0)
+                        continue;
+
+                    if (!findDirectory && !S_ISDIR(file_stat.st_mode) ||
+                        findDirectory && S_ISDIR(file_stat.st_mode))
+                    {
+                        if (pattern_match(fileinfo->d_name, filter.c_str()))
+                            out.push_back(search_path + fileinfo->d_name);
+                    }
+
+                    if (includeSubDirectory && S_ISDIR(file_stat.st_mode))
+                        ps.push(search_path + fileinfo->d_name + "/");
+                }
+                closedir(handle);
+            }
+        }
+        return out;
+    }
+
+    string align_blank(const string& input, int align_size, char blank){
+        if(input.size() >= align_size) return input;
+        string output = input;
+        for(int i = 0; i < align_size - input.size(); ++i)
+            output.push_back(blank);
+        return output;
+    }
+
+
+    bool save_file(const string& file, const void* data, size_t length, bool mk_dirs){
+
+        if (mk_dirs){
+            int p = (int)file.rfind('/');
+
+            if (p != -1){
+                if (!mkdirs(file.substr(0, p)))
+                    return false;
+            }
+        }
+
+        FILE* f = fopen(file.c_str(), "wb");
+        if (!f) return false;
+
+        if (data && length > 0){
+            if (fwrite(data, 1, length, f) != length){
+                fclose(f);
+                return false;
+            }
+        }
+        fclose(f);
+        return true;
+    }
+
+    bool save_file(const string& file, const string& data, bool mk_dirs){
+        return save_file(file, data.data(), data.size(), mk_dirs);
+    }
+
+    bool save_file(const string& file, const vector<uint8_t>& data, bool mk_dirs){
+        return save_file(file, data.data(), data.size(), mk_dirs);
+    }
+
+
+    static volatile bool g_has_exit_signal = false;
+    static int g_signum = 0;
+    static void signal_callback_handler(int signum){
+        INFO("Capture interrupt signal.");
+        g_has_exit_signal = true;
+        g_signum = signum;
+    }
+
+    int while_loop(){
+        signal(SIGINT, signal_callback_handler);
+        signal(SIGQUIT, signal_callback_handler);
+        while(!g_has_exit_signal){
+            this_thread::yield();
+        }
+        INFO("Loop over.");
+        return g_signum;
+    }
+
+
+    string format(const char* fmt, ...) {
+        va_list vl;
+        va_start(vl, fmt);
+        char buffer[2048];
+        vsnprintf(buffer, sizeof(buffer), fmt, vl);
+        return buffer;
+    }
+
+
+    const char* log_level(int level) {
+        switch (level) {
+        case LFATAL:    return "FATAL";
+        case LERROR:    return "ERROR";
+        case LWARN:     return "WARN";
+        case LINFO:     return "INFO";
+        case LVERBOSE:  return "VERBOSE";
+        default:        return "UNKONWN";
+        }
+        return "UNKNOWN";
+    }
+
+
+    static struct Logger{
+        mutex logger_lock_;
+        string logger_directory;
+        int logger_level{ILOGGER_INFO};
+        vector<string> cache_, local_;
+        shared_ptr<thread> flush_thread_;
+        atomic<bool> keep_run_{false};
+        shared_ptr<FILE> handler;
+        bool logger_shutdown{false};
+
+        void write(const string& line) {
+
+            lock_guard<mutex> l(logger_lock_);
+            if(logger_shutdown) 
+                return;
+
+            if (!keep_run_) {
+
+                if(flush_thread_) 
+                    return;
+
+                cache_.reserve(1000);
+                keep_run_ = true;
+                flush_thread_.reset(new thread(std::bind(&Logger::flush_job, this)));
+            }
+            cache_.emplace_back(line);
+        }
+
+        void flush() {
+
+            if (cache_.empty())
+                return;
+
+            {
+                std::lock_guard<mutex> l(logger_lock_);
+                std::swap(local_, cache_);
+            }
+
+            if (!local_.empty() && !logger_directory.empty()) {
+
+                auto now = date_now();
+                auto file = format("%s%s.txt", logger_directory.c_str(), now.c_str());
+                if (!exists(file)) {
+                    handler.reset(fopen_mkdirs(file, "wb"), fclose);
+                }
+                else if (!handler) {
+                    handler.reset(fopen_mkdirs(file, "a+"), fclose);
+                }
+
+                if (handler) {
+                    for (auto& line : local_)
+                        fprintf(handler.get(), "%s\n", line.c_str());
+                    fflush(handler.get());
+                    handler.reset();
+                }
+            }
+            local_.clear();
+        }
+
+        void flush_job() {
+
+            auto tick_begin = timestamp_now();
+            std::vector<string> local;
+            while (keep_run_) {
+
+                if (timestamp_now() - tick_begin < 1000) {
+                    this_thread::sleep_for(std::chrono::milliseconds(100));
+                    continue;
+                }
+
+                tick_begin = timestamp_now();
+                flush();
+            }
+            flush();
+        }
+
+        void set_save_directory(const string& loggerDirectory) {
+            logger_directory = loggerDirectory;
+
+            if (logger_directory.empty())
+                logger_directory = ".";
+
+
+            if (logger_directory.back() != '/') {
+                logger_directory.push_back('/');
+            }
+
+        }
+
+        void set_logger_level(int level){
+            logger_level = level;
+        }
+
+        void close(){
+            {
+                lock_guard<mutex> l(logger_lock_);
+                if (logger_shutdown) return;
+
+                logger_shutdown = true;
+            };
+
+            if (!keep_run_) return;
+            keep_run_ = false;
+            flush_thread_->join();
+            flush_thread_.reset();
+            handler.reset();
+        }
+
+        virtual ~Logger(){
+            close();
+        }
+    }__g_logger;
+
+
+    void set_logger_save_directory(const string& loggerDirectory){
+        __g_logger.set_save_directory(loggerDirectory);
+    }
+
+    void set_log_level(int level){
+        __g_logger.set_logger_level(level);
+    }
+
+    void __log(const char* file, int line, int level, const char* fmt, ...) {
+
+        if(level > __g_logger.logger_level)
+            return;
+
+        string now = time_now();
+        va_list vl;
+        va_start(vl, fmt);
+        
+        char buffer[2048];
+        string filename = file_name(file, true);
+        int n = snprintf(buffer, sizeof(buffer), "[%s]", now.c_str());
+
+        if (level == ILOGGER_FATAL || level == ILOGGER_ERROR) {
+            n += snprintf(buffer + n, sizeof(buffer) - n, "[\033[31m%s\033[0m]", log_level(level));
+        }
+        else if (level == ILOGGER_WARNING) {
+            n += snprintf(buffer + n, sizeof(buffer) - n, "[\033[33m%s\033[0m]", log_level(level));
+        }
+        else {
+            n += snprintf(buffer + n, sizeof(buffer) - n, "[\033[32m%s\033[0m]", log_level(level));
+        }
+
+
+        n += snprintf(buffer + n, sizeof(buffer) - n, "[%s:%d]:", filename.c_str(), line);
+        vsnprintf(buffer + n, sizeof(buffer) - n, fmt, vl);
+
+        if (level == ILOGGER_FATAL || level == ILOGGER_ERROR) {
+            fprintf(stderr, "%s\n", buffer);
+        }
+        else if (level == ILOGGER_WARNING) {
+            fprintf(stdout, "%s\n", buffer);
+        }
+        else {
+            fprintf(stdout, "%s\n", buffer);
+        }
+
+        if(!__g_logger.logger_directory.empty()){
+            // remove save color txt
+            remove_color_text(buffer);
+            __g_logger.write(buffer);
+            if (level == ILOGGER_FATAL) {
+                __g_logger.flush();
+                fflush(stdout);
+                abort();
+            }
+        }
+    }
+
+
 
 
 } // end namespace log
