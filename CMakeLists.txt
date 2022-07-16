@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 # set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
-project(liux_server) # 项目名称为 liux，存储在变量 PROJECT_NAME 中
+project(liux_simple_erver) # 项目名称为 liux，存储在变量 PROJECT_NAME 中
 
 set(CMAKE_VERBOSE_MAKEFILE ON) 
 # 编译参数 -g 允许 gdb 调试模式

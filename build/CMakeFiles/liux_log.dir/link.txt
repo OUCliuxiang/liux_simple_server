@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -Wno-deprecated -Wno-unused-function -fpermissive  -shared -Wl,-soname,libliux_log.so -o ../lib/libliux_log.so CMakeFiles/liux_log.dir/src/log.cpp.o 

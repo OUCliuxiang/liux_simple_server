@@ -8,8 +8,9 @@
 #include <vector>
 #include <tuple>
 #include <time.h>
+#include <unistd.h> // syscall
+#include <sys/syscll.h> //SYS_gettid
 
-#include "util.h"
 
 // Level_FATAL
 #define LFATAL      5
@@ -18,20 +19,20 @@
 #define LINFO       2
 #define LVERBOSE    1
 
-#define FATAL log::__log(__FILE__, __LINE__, LFATAL, __VA_ARGS__)
-#define ERROR log::__log(__FILE__, __LINE__, LERROR, __VA_ARGS__)
-#define WARN log::__log(__FILE__, __LINE__, LWARN, __VA_ARGS__)
-#define INFO log::__log(__FILE__, __LINE__, LINFO, __VA_ARGS__)
-#define VERBOSE log::__log(__FILE__, __LINE__, LVERBOSE, __VA_ARGS__)
+#define FATAL(...)   log::__log(__FILE__, __LINE__, LFATAL, __VA_ARGS__)
+#define ERROR(...)   log::__log(__FILE__, __LINE__, LERROR, __VA_ARGS__)
+#define WARN(...)    log::__log(__FILE__, __LINE__, LWARN, __VA_ARGS__)
+#define INFO(...)    log::__log(__FILE__, __LINE__, LINFO, __VA_ARGS__)
+#define VERBOSE(...) log::__log(__FILE__, __LINE__, LVERBOSE, __VA_ARGS__)
 
 namespace log {
 
     using namespace std;
 
-    const char* date_now(); 
-    const char* time_now();
-    const char* gmtime_now(); 
-    const char* gmtime(time_t t); // UTC 格式时间，具体在 cpp 里有例子
+    string date_now(); 
+    string time_now();
+    string gmtime_now(); 
+    string gmtime(time_t t); // UTC 格式时间，具体在 cpp 里有例子
     time_t gmtime2ctime(const string& gmt); // 转为自1970经过的秒数
     void sleep(int ms);
     long long timestamp_now(); // 获取时间戳
@@ -44,8 +45,8 @@ namespace log {
 
 
     FILE* fopen_mkdirs(const char* path, const char* mode);
-    const char* file_name(const char* path, bool include_suffix);
-    const char* directory(const char* path);
+    string file_name(const string& path, bool include_suffix);
+    string directory(const string& path);
 
 
     time_t last_modify(const char* file);
@@ -62,7 +63,7 @@ namespace log {
     
 
     vector<string> find_files(
-        const stirng& directory,
+        const string& directory,
         const string& filter = "*", 
         bool findDirectory = false,
         bool includeSubDirectory = false
@@ -85,8 +86,21 @@ namespace log {
     void set_logger_save_directory(const string& directory);
     void set_log_level(int level); // 过滤，高于这个级别的日志才输出
     // 日志输出函数，在上面写成了宏以方便实用
-    void __log(const char* file, int line, int level, const char* fmt, ...);
+    void __log(const string& file, int line, int level, const char* fmt, ...);
     void destroy_logger(); // 销毁日志器
+
+    
+    long GetThreadId() {return ::syscall(SYS_gettid);}
+    uint64_t GetCurrentMS() {
+        tmieval tv;
+        gettimeofday(&tv, nullptr);
+        return tv.tv_sec*1000ul + tv.tv_usec / 1000;
+    }
+    uint64_t GetCurrentUS() {
+        tmieval tv;
+        gettimeofday(&tv, nullptr);
+        return tv.tv_sec*1000ul * 1000ul + tv.tv_usec;
+    }
 }
 
 

@@ -2,7 +2,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>
-#include <string>
 #include <mutex>
 #include <memory>
 #include <vector>
@@ -13,7 +12,10 @@
 #include <signal.h>
 #include <functional>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include <stdarg.h>
 // #include <boost/legical_cast>
 
 
@@ -29,7 +31,7 @@ namespace log {
 
     using namespace std;
     
-    const char* date_now() {
+    string date_now() {
         // yyyy-mm-dd
         char time_string[20];
         __GetTimeBlock;
@@ -39,18 +41,18 @@ namespace log {
         return time_string;
     }
 
-    const char* time_now() {
+    string time_now() {
         // yyyy-mm-dd HH:MM:SS
         char time_string[20];
         __GetTimeBlock;
-        sprintf(time_string, "%04d-%02d-%02d %02d:%02d:02d", 
+        sprintf(time_string, "%04d-%02d-%02d %02d:%02d:%02d", 
                 t.tm_year+1900, t.tm_mon+1, t.tm_mday, 
                 t.tm_hour,      t.tm_min,   t.tm_sec);
         return time_string;
     }
 
     // 格林尼治格式时间，time.h 库有 gmtime 调用，这里再做一层封装
-    const char* gmtime(time_t t) {
+    string gmtime(time_t t) {
         // week, day month year time GMT
         // e.g., Sat, 22 Aug 2015 11:48:50 GMT
         
@@ -65,7 +67,7 @@ namespace log {
         return tstr;
     }
 
-    const char* gmtime_now() {
+    string gmtime_now() {
         return gmtime(time(nullptr));
     }
 
@@ -117,13 +119,13 @@ namespace log {
 
     // 获取当前时间戳
     long long timestamp_now() {
-        return  chrono::duration_cast<chrono::milliseconds>(\
-                chrono::system_clock::now().time_since_epoch.count());
+        return  chrono::duration_cast<chrono::milliseconds>( \
+                chrono::system_clock::now().time_since_epoch()).count();
     }
     
 
     bool isfile(const char* file) {
-        static stat st; // 描述文件属性的结构体 
+        struct stat st; // 描述文件属性的结构体 
         stat(file, &st);
         return S_ISREG(st.st_mode);
     }
@@ -172,32 +174,31 @@ namespace log {
         if (p == -1)
             return nullptr;
         
-        string directory = _path.substr(0, p);
+        char directory[p+1];
+        strncpy(directory, path, p);
         if (!mkdirs(directory))
             return nullptr;
 
         return fopen(path, mode);
     }
 
-    const char* file_name(const char* path, bool include_suffix) {
-        if (path == nullptr) return "";
+    string file_name(const string& path, bool include_suffix) {
+        if (path.empty()) return "";
 
-        string _path(path);
-        int p = _path.refind('/');
+        int p = path.rfind('/');
         p += 1;
-        if (include_suffix) return _path.substr(p);
-        int u = _path.rfind('.');
-        if (u == -1) return _path.substr(p);
-        if (u <= p) u = _path.size() 
+        if (include_suffix) return path.substr(p);
+        int u = path.rfind('.');
+        if (u == -1) return path.substr(p);
+        if (u <= p) u = path.size(); 
         return path.substr(p, u-p);
     }
 
-    const char* directory(const char* path) {
-        if (path == nullptr) return ".";
-        string _path(path);
-        int p = _path.rfind('/');
+    string directory(const string& path) {
+        if (path.empty()) return ".";
+        int p = path.rfind('/');
         if (p == -1)    return ".";
-        return _path.substr(0, p+1);
+        return path.substr(0, p+1);
     }
 
 
@@ -250,7 +251,7 @@ namespace log {
 
     size_t file_size(const char* file){
         struct stat st;
-        stat(file.c_str(), &st);
+        stat(file, &st);
         return st.st_size;
     }
 
@@ -339,6 +340,55 @@ namespace log {
         size_t valid_size = dest - &opstr[0];
         opstr.resize(valid_size);
         return opstr;
+    }
+
+    bool alphabet_equal(char a, char b, bool ignore_case){
+        if (ignore_case){
+            a = a > 'a' && a < 'z' ? a - 'a' + 'A' : a;
+            b = b > 'a' && b < 'z' ? b - 'a' + 'A' : b;
+        }
+        return a == b;
+    }
+
+    static bool pattern_match_body(const char* str, const char* matcher, bool igrnoe_case){
+        //   abcdefg.pnga          *.png      > false
+        //   abcdefg.png           *.png      > true
+        //   abcdefg.png          a?cdefg.png > true
+
+        if (!matcher || !*matcher || !str || !*str) return false;
+
+        const char* ptr_matcher = matcher;
+        while (*str){
+            if (*ptr_matcher == '?'){
+                ptr_matcher++;
+            }
+            else if (*ptr_matcher == '*'){
+                if (*(ptr_matcher + 1)){
+                    if (pattern_match_body(str, ptr_matcher + 1, igrnoe_case))
+                        return true;
+                }
+                else{
+                    return true;
+                }
+            }
+            else if (!alphabet_equal(*ptr_matcher, *str, igrnoe_case)){
+                return false;
+            }
+            else{
+                if (*ptr_matcher)
+                    ptr_matcher++;
+                else
+                    return false;
+            }
+            str++;
+        }
+
+        while (*ptr_matcher){
+            if (*ptr_matcher != '*')
+                return false;
+            ptr_matcher++;
+        }
+        return true;
     }
 
     bool pattern_match(const char* str, const char* matcher, bool igrnoe_case){
@@ -438,7 +488,7 @@ namespace log {
             int p = (int)file.rfind('/');
 
             if (p != -1){
-                if (!mkdirs(file.substr(0, p)))
+                if (!mkdirs(file.substr(0, p).c_str()))
                     return false;
             }
         }
@@ -509,7 +559,7 @@ namespace log {
     static struct Logger{
         mutex logger_lock_;
         string logger_directory;
-        int logger_level{ILOGGER_INFO};
+        int logger_level{LINFO};
         vector<string> cache_, local_;
         shared_ptr<thread> flush_thread_;
         atomic<bool> keep_run_{false};
@@ -546,13 +596,13 @@ namespace log {
 
             if (!local_.empty() && !logger_directory.empty()) {
 
-                auto now = date_now();
-                auto file = format("%s%s.txt", logger_directory.c_str(), now.c_str());
-                if (!exists(file)) {
-                    handler.reset(fopen_mkdirs(file, "wb"), fclose);
+                string now = date_now();
+                string file = format("%s%s.txt", logger_directory.c_str(), now.c_str());
+                if (!exists(file.c_str())) {
+                    handler.reset(fopen_mkdirs(file.c_str(), "wb"), fclose);
                 }
                 else if (!handler) {
-                    handler.reset(fopen_mkdirs(file, "a+"), fclose);
+                    handler.reset(fopen_mkdirs(file.c_str(), "a+"), fclose);
                 }
 
                 if (handler) {
@@ -628,7 +678,7 @@ namespace log {
         __g_logger.set_logger_level(level);
     }
 
-    void __log(const char* file, int line, int level, const char* fmt, ...) {
+    void __log(const string& file, int line, int level, const char* fmt, ...) {
 
         if(level > __g_logger.logger_level)
             return;
@@ -641,10 +691,10 @@ namespace log {
         string filename = file_name(file, true);
         int n = snprintf(buffer, sizeof(buffer), "[%s]", now.c_str());
 
-        if (level == ILOGGER_FATAL || level == ILOGGER_ERROR) {
+        if (level == LFATAL || level == LERROR) {
             n += snprintf(buffer + n, sizeof(buffer) - n, "[\033[31m%s\033[0m]", log_level(level));
         }
-        else if (level == ILOGGER_WARNING) {
+        else if (level == LWARN) {
             n += snprintf(buffer + n, sizeof(buffer) - n, "[\033[33m%s\033[0m]", log_level(level));
         }
         else {
@@ -655,10 +705,10 @@ namespace log {
         n += snprintf(buffer + n, sizeof(buffer) - n, "[%s:%d]:", filename.c_str(), line);
         vsnprintf(buffer + n, sizeof(buffer) - n, fmt, vl);
 
-        if (level == ILOGGER_FATAL || level == ILOGGER_ERROR) {
+        if (level == LFATAL || level == LERROR) {
             fprintf(stderr, "%s\n", buffer);
         }
-        else if (level == ILOGGER_WARNING) {
+        else if (level == LWARN) {
             fprintf(stdout, "%s\n", buffer);
         }
         else {
@@ -667,9 +717,9 @@ namespace log {
 
         if(!__g_logger.logger_directory.empty()){
             // remove save color txt
-            remove_color_text(buffer);
+            // remove_color_text(buffer);
             __g_logger.write(buffer);
-            if (level == ILOGGER_FATAL) {
+            if (level == LFATAL) {
                 __g_logger.flush();
                 fflush(stdout);
                 abort();
