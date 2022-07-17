@@ -27,7 +27,7 @@
     tm& t = *(tm*) localtime(&timep);
 
 
-namespace log {
+namespace Log {
 
     using namespace std;
     
@@ -728,6 +728,17 @@ namespace log {
     }
 
 
+    pid_t GetThreadId() {return ::syscall(SYS_gettid);}
+    uint64_t GetCurrentMS() {
+        timeval tv;
+        gettimeofday(&tv, nullptr);
+        return tv.tv_sec*1000ul + tv.tv_usec / 1000;
+    }
+    uint64_t GetCurrentUS() {
+        timeval tv;
+        gettimeofday(&tv, nullptr);
+        return tv.tv_sec*1000ul * 1000ul + tv.tv_usec;
+    }
 
 
 } // end namespace log

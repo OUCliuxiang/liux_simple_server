@@ -43,7 +43,7 @@ add_library(liux_log SHARED src/log.cpp)
 # add_library(liux_util SHARED src/util.cpp)
 # add_library(liux_mutex SHARED src/mutex.cpp)
 # add_library(liux_config SHARED src/config.cpp src/log.cpp src/mutex.cpp src/util.cpp )
-# add_library(liux_thread SHARED src/thread.cpp src/mutex.cpp)
+add_library(liux_thread SHARED src/thread.cpp src/log.cpp)
 # add_library(liux_fiber SHARED src/fiber.cpp src/thread.cpp src/config.cpp src/log.cpp src/util.cpp )
 # add_library(liux_scheduler SHARED include/scheduler.h src/fiber.cpp src/log.cpp src/thread.cpp src/mutex.cpp)
 
@@ -52,7 +52,7 @@ set(LIBS
     # liux_config
     # liux_util
     # liux_mutex
-    # liux_thread
+    liux_thread
     # liux_fiber
     # liux_liux_scheduler
     # pthread

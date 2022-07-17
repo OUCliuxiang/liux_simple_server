@@ -196,6 +196,9 @@ liux_simple_erver_BINARY_DIR:STATIC=/root/liux_simple_server/build
 //Value Computed by CMake
 liux_simple_erver_SOURCE_DIR:STATIC=/root/liux_simple_server
 
+//Dependencies for target
+liux_thread_LIB_DEPENDS:STATIC=
+
 
 ########################
 # INTERNAL cache entries

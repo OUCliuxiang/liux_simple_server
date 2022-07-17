@@ -6,10 +6,11 @@
 
 #include <string>
 #include <vector>
-#include <tuple>
-#include <time.h>
+// #include <tuple>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h> // syscall
-#include <sys/syscll.h> //SYS_gettid
+#include <sys/syscall.h> //SYS_gettid
 
 
 // Level_FATAL
@@ -19,13 +20,14 @@
 #define LINFO       2
 #define LVERBOSE    1
 
-#define FATAL(...)   log::__log(__FILE__, __LINE__, LFATAL, __VA_ARGS__)
-#define ERROR(...)   log::__log(__FILE__, __LINE__, LERROR, __VA_ARGS__)
-#define WARN(...)    log::__log(__FILE__, __LINE__, LWARN, __VA_ARGS__)
-#define INFO(...)    log::__log(__FILE__, __LINE__, LINFO, __VA_ARGS__)
-#define VERBOSE(...) log::__log(__FILE__, __LINE__, LVERBOSE, __VA_ARGS__)
+#define FATAL(...)   Log::__log(__FILE__, __LINE__, LFATAL, __VA_ARGS__)
+#define ERROR(...)   Log::__log(__FILE__, __LINE__, LERROR, __VA_ARGS__)
+#define WARN(...)    Log::__log(__FILE__, __LINE__, LWARN, __VA_ARGS__)
+#define INFO(...)    Log::__log(__FILE__, __LINE__, LINFO, __VA_ARGS__)
+#define VERBOSE(...) Log::__log(__FILE__, __LINE__, LVERBOSE, __VA_ARGS__)
 
-namespace log {
+namespace Log {
+    // 命名空间中不要写实现，否则编译会报 multiple defination 的错误
 
     using namespace std;
 
@@ -90,17 +92,9 @@ namespace log {
     void destroy_logger(); // 销毁日志器
 
     
-    long GetThreadId() {return ::syscall(SYS_gettid);}
-    uint64_t GetCurrentMS() {
-        tmieval tv;
-        gettimeofday(&tv, nullptr);
-        return tv.tv_sec*1000ul + tv.tv_usec / 1000;
-    }
-    uint64_t GetCurrentUS() {
-        tmieval tv;
-        gettimeofday(&tv, nullptr);
-        return tv.tv_sec*1000ul * 1000ul + tv.tv_usec;
-    }
+    pid_t GetThreadId();
+    uint64_t GetCurrentMS();
+    uint64_t GetCurrentUS();
 }
 
 

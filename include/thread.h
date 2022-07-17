@@ -28,7 +28,7 @@ private:
 
 // 封装域线程锁
 template<typename T> 
-class ScopedLockImpl(T* mutex) {
+class ScopedLockImpl {
 public:
     explicit ScopedLockImpl(T* mutex)
         : m_mutex(mutex)
@@ -64,8 +64,7 @@ private:
 
 // 封装一个域读锁
 template <typename T>
-class ReadScopedLockImpl
-{
+class ReadScopedLockImpl{
 public:
     explicit ReadScopedLockImpl(T* mutex)
         : m_mutex(mutex)
@@ -210,11 +209,11 @@ public:
     ~Thread();
 
     // 获取线程 pid 
-    pid_t getId() const;
+    inline pid_t getId() const {return m_id;}
     // 获取线程名
-    const std::string& getName() const;
+    inline const std::string& getName() const {return m_name;}
     // 设置线程名 
-    void setName(const std::string& name);
+    inline void setName(const std::string& name) {m_name = name;}
     // 线程并入主线程 
     int join();
 
@@ -245,4 +244,4 @@ private:
 };
 
 
-#ednif // __THREAD_H__
+#endif // __THREAD_H__
